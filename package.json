@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "react-charts": "^3.0.0-beta.55",
+    "recharts": "^2.7.2"
+  }
+}
