@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 
 function Transaction({ transaction }) {
     let result_amount;
-    if (transaction.type === 'income') {
+    if (transaction.category === 'Income') {
         result_amount = <font color="green">+${transaction.amount}</font>;
     } else {
         result_amount = <font color="red">-${transaction.amount}</font>;

@@ -13,6 +13,7 @@ class Transaction(models.Model):
         ('Subscriptions', 'Subscriptions' ),
         ('Groceries', 'Groceries'),
         ('Paycheck & Deposits', 'Paycheck & Deposits'),
+        ('Income', 'Income'),
     ]
 
     TYPE_CHOICES = [

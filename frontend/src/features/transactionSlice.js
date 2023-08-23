@@ -17,9 +17,10 @@ export const transactionSlice = createSlice({
             state.loading = false;
             state.error = null;
         },
-        getTransactionsFailure: (state) => {
+        getTransactionsFailure: (state, { payload }) => {
+            console.log('error: ', payload)
             state.loading = false;
-            state.error = true;
+            state.error = payload;
         },
     },    
 });
@@ -40,7 +41,7 @@ export function fetchTransactions() {
   
         dispatch(getTransactionsSuccess(data))
       } catch (error) {
-        dispatch(getTransactionsFailure())
+        dispatch(getTransactionsFailure(error))
       }
     }
   };
