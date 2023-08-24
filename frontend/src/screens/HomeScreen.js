@@ -4,6 +4,8 @@ import { fetchTransactions, transactionSelector } from '../features/transactionS
 import { Accordion } from 'react-bootstrap'
 import Transaction from '../components/Transaction'
 import AccordionBody from 'react-bootstrap/esm/AccordionBody'
+import Loader from '../components/Loader'
+import AlertMessage from '../components/AlertMessage'
 
 function HomeScreen() {
 
@@ -15,8 +17,8 @@ function HomeScreen() {
   }, [dispatch])
   
   const renderTransactions = () => {
-    if (loading) return <h2>Loading...</h2>
-    if (error) return <h2>Error: Unable to display transactions... {error.message}</h2>
+    if (loading) return <Loader />
+    if (error) return <AlertMessage variant='danger' message={error.message} />
 
     return (transactions.map((transaction) => <Transaction key={transaction.id} transaction = {transaction} />));
   }
