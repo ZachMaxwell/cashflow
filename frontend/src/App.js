@@ -7,7 +7,7 @@ import HomeScreen from './screens/HomeScreen'
 import TrendsScreen from './screens/TrendsScreen'
 import NetworthScreen from './screens/NetworthScreen'
 import BudgetScreen from './screens/BudgetScreen'
-import TransactionDetailScreen from './screens/TransactionDetailScreen'
+import TransactionDetailsScreen from './screens/TransactionDetailsScreen'
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
           
             <Route  path="/" element={ <HomeScreen /> } />
 
-            <Route  path="/transaction/:id" element={ <TransactionDetailScreen /> } />
+            <Route  path="/transaction/:id" element={ <TransactionDetailsScreen /> } />
 
             <Route  path="/trends" element={ <TrendsScreen /> } />
 

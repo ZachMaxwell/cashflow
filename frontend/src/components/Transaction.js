@@ -14,7 +14,7 @@ function Transaction({ transaction }) {
     }
 
     return (
-    <Link to={`transaction/${transaction.id}`}>
+    <Link to={`transaction/${transaction.id}`}> 
         <Card className="my-3 p-3 rounded">
             <Card.Body>
 
