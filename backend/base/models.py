@@ -16,7 +16,7 @@ class Transaction(models.Model):
         ('Income', 'Income'),
     ]
 
-    TYPE_CHOICES = [
+    TRANSACTION_TYPE_CHOICES = [
         ('Deposit', 'Deposit'),
         ('Expense', 'Expense'),
         ('Investment', 'Investment'),
@@ -72,14 +72,13 @@ class Transaction(models.Model):
         ('31', '31'),
     ]
 
-
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     day = models.CharField(max_length=2, choices = DAY_CHOICES, default = '1', null=False, blank=False)
     month = models.CharField(max_length=9, choices = MONTH_CHOICES, default = 'Jan', null=False, blank=False)
     year = models.CharField(max_length=4, null=False, blank=False)
     description = models.CharField(max_length=100, null=True, blank=True)
-    type = models.CharField(max_length=10, choices = TYPE_CHOICES, default = 'Expense',null=False, blank=False)
+    transaction_type = models.CharField(max_length=10, choices = TRANSACTION_TYPE_CHOICES, default = 'Expense',null=False, blank=False)
     category = models.CharField(max_length=75, choices = CATEGORY_CHOICES, default = 'Travel, Personal, & Other',null=False, blank=False)
     account = models.CharField(max_length=10, null=True, blank=True)
     id = models.AutoField(primary_key=True, editable=False)

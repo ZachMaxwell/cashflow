@@ -7,6 +7,7 @@ export const transactionSlice = createSlice({
         transactions: [],
         loading: false,
         error: null,
+        isAddingTransaction: false,
     },
     reducers: {
         getTransactions: (state) => {
@@ -22,15 +23,23 @@ export const transactionSlice = createSlice({
             state.loading = false;
             state.error = payload;
         },
+        addTransaction: (state, { payload }) => {
+            state.transactions.push(payload);
+        },
+        toggleAddTransactionForm: (state) => {
+            state.isAddingTransaction = !state.isAddingTransaction;
+        },
     },    
 });
 
-export const { getTransactions, getTransactionsSuccess, getTransactionsFailure } = transactionSlice.actions;
+//Export the actions so I can dispatch them in my components
+export const { getTransactions, getTransactionsSuccess, getTransactionsFailure, toggleAddTransactionForm, addTransaction } = transactionSlice.actions;
 
 export const transactionSelector = (state) => state.transactions;
 
 export default transactionSlice.reducer;
 
+//API call to fetch the transactions from the /api/transactions/ API endpoint on the Django backend
 export function fetchTransactions() {
     return async (dispatch) => {
       dispatch(getTransactions())
