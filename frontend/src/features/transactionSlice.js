@@ -8,6 +8,8 @@ export const transactionSlice = createSlice({
         loading: false,
         error: null,
         isAddingTransaction: false,
+        deleteTransactionSuccess: null,
+        deleteTransactionFailure: null,
     },
     reducers: {
         getTransactions: (state) => {
@@ -29,15 +31,37 @@ export const transactionSlice = createSlice({
         toggleAddTransactionForm: (state) => {
             state.isAddingTransaction = !state.isAddingTransaction;
         },
-    },    
+        deleteTransaction: (state, { payload }) => {
+            const deletedId = payload;
+            console.log(payload);
+            state.transactions = state.transactions.filter((transaction) => transaction.id !== deletedId);
+        },
+        deleteTransactionSuccess: (state, { payload }) => {
+            state.deleteTransactionSuccess = payload;
+            state.deleteTransactionFailure = null;
+        },
+        deletedeleteTransactionFailure: (state, { payload }) => {
+            state.deleteTransactionFailure = payload;
+            state.deleteTransactionSuccess = null;
+        },  
+    },
 });
 
 //Export the actions so I can dispatch them in my components
-export const { getTransactions, getTransactionsSuccess, getTransactionsFailure, toggleAddTransactionForm, addTransaction } = transactionSlice.actions;
+export const { 
+
+    getTransactions, 
+    getTransactionsSuccess, 
+    getTransactionsFailure, 
+    toggleAddTransactionForm, 
+    addTransaction,
+    deleteTransaction,
+    deleteTransactionSuccess,
+    deleteTransactionFailure,
+
+    } = transactionSlice.actions;
 
 export const transactionSelector = (state) => state.transactions;
-
-export default transactionSlice.reducer;
 
 //API call to fetch the transactions from the /api/transactions/ API endpoint on the Django backend
 export function fetchTransactions() {
@@ -54,3 +78,17 @@ export function fetchTransactions() {
       }
     }
   };
+
+//API call to delete a transaction from the /api/transactions/ API endpoint on the Django backend
+export const deleteTransactionAsync = (transactionId) => async (dispatch) => {
+    try{
+        await axios.delete(`/api/transactions/delete/${transactionId}`);
+        dispatch(deleteTransaction(transactionId));
+        dispatch(deleteTransactionSuccess('Transaction deleted successfully!'))
+    } catch (error) {
+        dispatch(deleteTransactionFailure('Error deleting transaction: ', error.message));
+    
+    }
+};
+
+export default transactionSlice.reducer;

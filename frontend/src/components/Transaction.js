@@ -1,11 +1,9 @@
 import React from 'react'
-import { Card } from 'react-bootstrap'
+import { Card, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 
-
-
-function Transaction({ transaction }) {
+function Transaction({ transaction, onDelete, onEdit }) {
     let result_amount;
     if (transaction.category === 'Income') {
         result_amount = <font color="green">+${transaction.amount}</font>;
@@ -14,8 +12,9 @@ function Transaction({ transaction }) {
     }
 
     return (
-    <Link to={`transaction/${transaction.id}`}> 
+    
         <Card className="my-3 p-3 rounded">
+        <Link to={`transaction/${transaction.id}`}> 
             <Card.Body>
 
                 <Card.Title as="h4">
@@ -35,8 +34,26 @@ function Transaction({ transaction }) {
                 </Card.Title>
 
             </Card.Body>
-        </Card>
-    </Link>
+        </Link>
+
+        <Card.Body>
+        <Button 
+            style={{ padding: '5px 10px', fontSize: '14px' }}
+            onClick={() => onDelete(transaction.id)} variant="danger"
+        >
+            Delete
+        </Button>
+        
+        <Button
+            style={{ padding: '5px 10px', fontSize: '14px', marginRight: '100px' }}
+            onClick={() => onEdit(transaction.id)} variant="warning"
+        >
+            Edit
+        </Button>
+
+        </Card.Body>
+
+        </Card> 
   );
 }
 

@@ -8,6 +8,7 @@ import TrendsScreen from './screens/TrendsScreen'
 import NetworthScreen from './screens/NetworthScreen'
 import BudgetScreen from './screens/BudgetScreen'
 import TransactionDetailsScreen from './screens/TransactionDetailsScreen'
+import LoginScreen from './screens/LoginScreen'
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
             <Route  path="/networth" element={ <NetworthScreen /> } />
 
             <Route  path="/budget" element={ <BudgetScreen /> } />
+
+            <Route path="/login" element={ <LoginScreen />} />
 
           </Routes>
         </Container>  
