@@ -1,15 +1,29 @@
 import React from 'react'
 import { Card, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import EditTransactionForm from './EditTransactionForm';
+import { toggleEditTransactionForm } from '../features/transactionSlice';
+import { useDispatch } from 'react-redux'
 
 
 function Transaction({ transaction, onDelete, onEdit }) {
+
+    const dispatch = useDispatch();
+
+    const [isEditing, setIsEditing] = useState(false);
+
     let result_amount;
     if (transaction.category === 'Income') {
         result_amount = <font color="green">+${transaction.amount}</font>;
     } else {
         result_amount = <font color="red">-${transaction.amount}</font>;
     }
+
+    const toggleEditForm = () => {
+        setIsEditing(!isEditing);
+        dispatch(toggleEditTransactionForm("Currently editing transaction"))
+    };
 
     return (
     
@@ -46,13 +60,20 @@ function Transaction({ transaction, onDelete, onEdit }) {
         
         <Button
             style={{ padding: '5px 10px', fontSize: '14px', marginRight: '100px' }}
-            onClick={() => onEdit(transaction.id)} variant="warning"
+            onClick={toggleEditForm} variant="warning"
         >
             Edit
         </Button>
-
         </Card.Body>
-
+            {isEditing && (
+                <EditTransactionForm
+                    transaction={transaction}
+                    onCancel={toggleEditForm}
+                    onSave={(updatedTransaction) => {
+                        toggleEditForm();
+                    }}
+                />
+            )}
         </Card> 
   );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { addTransaction } from '../features/transactionSlice';
+import { addTransaction, addTransactionSuccess, addTransactionFailure } from '../features/transactionSlice';
 import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import AUTH_TOKEN from '../config_DELETEME';
@@ -36,12 +36,18 @@ function TransactionForm() {
     axios.get('/api/transaction-model-fields-and-types')
       .then((response) => {
         if (response.data.fields_and_types) {
+          // gets the full array of fields with their associated types from the response object
           const fieldsAndTypes = response.data.fields_and_types;
+          // gets the key value from fieldsAndTypes object which is the name of the field
           const fieldNames = Object.keys(fieldsAndTypes);
-
+        
+        // setFields now contains the fieldNames
         setFields(fieldNames);
+        // setFieldTypes now contains the fieldTypes
         setFieldTypes(fieldsAndTypes);
+        // set initialForm data to an empty array
         const initialFormData = {};
+        // loop through the fieldNames array and set initial values for each field depending on the data type 
         fieldNames.forEach((fieldName) => {
           if (fieldsAndTypes[fieldName] === 'AutoField') {
             initialFormData[fieldName] = 0;
@@ -100,20 +106,23 @@ function TransactionForm() {
   
       // Check if the request was successful
       if (response.status === 201) {
-        // Handle success, for example, clear the form
+        // Handle success & clear the form
         setFormData({
           // Place holder to set the form data back to empty
         });
   
-        // Optionally, dispatch an action to update your Redux store
+        // Dispatch addTransaction action to update the Redux store
         dispatch(addTransaction(response.data));
+        dispatch(addTransactionSuccess('Transaction added successfully!'));
       } else {
         // Handle other response statuses or errors
         console.error('Error:', response.status);
+        dispatch(addTransactionFailure('Error adding transaction: ', response.status));
       }
     } catch (error) {
       // Handle network errors or other exceptions
       console.error('Error:', error);
+      dispatch(addTransactionFailure('Error adding transaction: ', error.message));
     }
   };
 

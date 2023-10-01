@@ -32,15 +32,17 @@ function TrendsScreen() {
 
     //***code below covers the "Income, Expense, Investment, Net" bar chart 
     const groupedMonthlyData = transactions.reduce((total, item) => {
-        const { month, type, amount } = item;
+        const { month, transaction_type, amount } = item;
         if (!total[month]) {
             total[month] = { month, income: 0, expense: 0, investment: 0, net: 0 };
         }
-        if (type === "income") {
+        if (transaction_type === "Deposit") {
             total[month].income += amount;
-        } else if (type === "expense") {
+            console.log('this is the income: ', total[month].income);
+        } else if (transaction_type === "Expense") {
             total[month].expense += amount;
-        } else if (type === "investment") {
+            console.log('this is the expense: ', total[month].expense);
+        } else if (transaction_type === "Investment") {
             total[month].investment += amount;
         }
         total[month].net = total[month].income - total[month].expense;
@@ -48,17 +50,18 @@ function TrendsScreen() {
     }, {});
 
     const combinedMonthlyData = Object.values(groupedMonthlyData);
+    console.log('This is the combined monthly data: ', combinedMonthlyData);
     //END categorysection
 
-    //***code below covers the breakdown by category of expenses
+    //***code below covers the breakdown by CATEGORY of expenses
     const groupedCategoryData = transactions.reduce((total, item) => {
-        const { month, category, type, amount } = item;
+        const { month, category, transaction_type, amount } = item;
         
         
             if (!total[month]) {
                 total[month] = {};
             }
-            if (type === "expense") {
+            if (transaction_type === "expense") {
                 if (!total[month][category]) {
                     total[month][category] = 0;
                 }

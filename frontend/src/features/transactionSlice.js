@@ -8,8 +8,13 @@ export const transactionSlice = createSlice({
         loading: false,
         error: null,
         isAddingTransaction: false,
+        addTransactionSuccess: null,
+        addTransactionFailure: null,
         deleteTransactionSuccess: null,
         deleteTransactionFailure: null,
+        isEditingTransaction: false,
+        editTransactionSuccess: null,
+        editTransactionFailure: null,
     },
     reducers: {
         getTransactions: (state) => {
@@ -28,6 +33,14 @@ export const transactionSlice = createSlice({
         addTransaction: (state, { payload }) => {
             state.transactions.push(payload);
         },
+        addTransactionSuccess: (state, { payload }) => {
+            state.addTransactionSuccess = payload;
+            state.addTransactionFailure = null;
+        },
+        addTransactionFailure: (state, { payload }) => {
+            state.addTransactionFailure = payload;
+            state.addTransactionSuccess = null;
+        },
         toggleAddTransactionForm: (state) => {
             state.isAddingTransaction = !state.isAddingTransaction;
         },
@@ -43,7 +56,21 @@ export const transactionSlice = createSlice({
         deletedeleteTransactionFailure: (state, { payload }) => {
             state.deleteTransactionFailure = payload;
             state.deleteTransactionSuccess = null;
-        },  
+        },
+        editTransaction: (state, { payload }) => {
+            state.transactions.push(payload);
+        },
+        toggleEditTransactionForm: (state) => {
+            state.isEditingTransaction = !state.isEditingTransaction;
+        },
+        editTransactionSuccess: (state, { payload }) => {
+            state.editTransactionSuccess = payload;
+            state.editTransactionFailure = null;
+        },
+        editTransactionFailure: (state, { payload }) => {
+            state.editTransactionFailure = payload;
+            state.editTransactionSuccess = null;
+        },
     },
 });
 
@@ -55,9 +82,16 @@ export const {
     getTransactionsFailure, 
     toggleAddTransactionForm, 
     addTransaction,
+    addTransactionSuccess,
+    addTransactionFailure,
     deleteTransaction,
     deleteTransactionSuccess,
     deleteTransactionFailure,
+    editTransaction,
+    toggleEditTransactionForm,
+    editTransactionSuccess,
+    editTransactionFailure,
+    
 
     } = transactionSlice.actions;
 
