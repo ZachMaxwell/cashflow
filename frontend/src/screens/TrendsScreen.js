@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, Label } from 'recharts';
-import { Link } from 'react-router-dom';
-import axios from 'axios'
+import { Form, Accordion } from 'react-bootstrap';
+import axios from 'axios';
+import Loader from '../components/Loader';
 
 function TrendsScreen() {
 
-    //API call to get all transactions
+    //Local state set up
     const [transactions, setTransactions] = useState([]);
+    const [selectedYear, setSelectedYear] = useState('');
     const [loading, setLoading] = useState(true);
+
+    const filteredTransactionsByYear = selectedYear
+        ? transactions.filter(transaction => transaction.year === selectedYear)
+        : transactions;
+
+    //Make a set containing all available years for use in Form.Select so I don't have to hard-code all the year values in the select drop down
+    const availableYears = [...new Set(transactions.map(transaction => transaction.year))];
     
+    //API call to get all transactions
     useEffect(() => {
       async function fetchTransactions() {
         try {
@@ -24,74 +34,101 @@ function TrendsScreen() {
     
       fetchTransactions();
     }, []);
+    console.log('these are all the transactions: ', transactions);
     
+    //If loading is true, return the Loader component
     if (loading) {
-      return <div>Loading...</div>;
+      return <Loader />
     }
-    //END API call
 
-    //***code below covers the "Income, Expense, Investment, Net" bar chart 
-    const groupedMonthlyData = transactions.reduce((total, item) => {
-        const { month, transaction_type, amount } = item;
-        if (!total[month]) {
-            total[month] = { month, income: 0, expense: 0, investment: 0, net: 0 };
-        }
-        if (transaction_type === "Deposit") {
-            total[month].income += amount;
-            console.log('this is the income: ', total[month].income);
-        } else if (transaction_type === "Expense") {
-            total[month].expense += amount;
-            console.log('this is the expense: ', total[month].expense);
-        } else if (transaction_type === "Investment") {
-            total[month].investment += amount;
-        }
-        total[month].net = total[month].income - total[month].expense;
-        return total;
-    }, {});
+    function calculateTotalsByYear(transactions) {
 
-    const combinedMonthlyData = Object.values(groupedMonthlyData);
-    console.log('This is the combined monthly data: ', combinedMonthlyData);
-    //END categorysection
+        //this will be the object that will hold the totals by year
+        const totalsByYear = {};
 
-    //***code below covers the breakdown by CATEGORY of expenses
-    const groupedCategoryData = transactions.reduce((total, item) => {
-        const { month, category, transaction_type, amount } = item;
-        
-        
-            if (!total[month]) {
-                total[month] = {};
+        transactions.forEach((transaction) => { 
+
+            const { year, month, transaction_type, amount } = transaction;
+
+            const amountFloat = parseFloat(amount); 
+
+            // Initialize the totalByYear object with each year  
+            if (!totalsByYear[year]) {
+                totalsByYear[year] = {};
             }
-            if (transaction_type === "expense") {
-                if (!total[month][category]) {
-                    total[month][category] = 0;
-                }
-            total[month][category] += amount;
-            } 
-        console.log(total);    
-        return total;
-        
+            
+            // Initialize the totalByYear object with each month for each corresponding year
+            if (!totalsByYear[year][month]) {
+                //OLD -> totalsByYear[year][month] = { income: 0, expense: 0, investment: 0, net: 0 };
+                totalsByYear[year][month] = { Net: 0 };
+              }
+            
+            // I think this might already be done in the previous step??
+            // Initialize the totalByYear object with each transaction type for the corresponding year and month
+            if (!totalsByYear[year][month][transaction_type]) {
+            totalsByYear[year][month][transaction_type] = 0;
+            }
+            
+            // Add the amount to the corresponding transaction type total for the corresponding year and month
+            totalsByYear[year][month][transaction_type] += amountFloat;
 
-    }, {});
-        
-    const combinedCategoryData = Object.entries(groupedCategoryData).map(([month, categoryData]) => {
-       return { month, ...categoryData };
-    });
+            // Calculate the Net difference for the corresponding year and month
+            totalsByYear[year][month].Net = (totalsByYear[year][month].Deposit || 0) - (totalsByYear[year][month].Expense || 0);
+            
+        });
+        console.log('current totals by year', totalsByYear);
+        return totalsByYear;
+    };
 
-    console.log(combinedCategoryData);
+    const yearlyTotalsByMonthAndTransactionType = calculateTotalsByYear(filteredTransactionsByYear);
 
-    // END category section
+    //Creates a new array of objects where each object includes the year, month, and the totals by transaction type for each year and month
+    const barChartDataByTransactionType = [];
+    for (const year in yearlyTotalsByMonthAndTransactionType) {
+        for (const month in yearlyTotalsByMonthAndTransactionType[year]) {
+            const dataPoints = {
+                year: year,
+                month: month,
+                ...yearlyTotalsByMonthAndTransactionType[year][month],
+            };
+            barChartDataByTransactionType.push(dataPoints);
+        }
+    }
+    console.log('this is the bar chart data by transaction type: ', barChartDataByTransactionType);
+
+    //Creates a new object where it separates out the transaction type totals and creates a new date field that includes 
+    //the month and year. This is done so that the bar chart can be displayed with the month and year on the x-axis
+    const barChartDataByTransactionTypeWithDate = barChartDataByTransactionType.map((item) => ({
+        ...item,
+        date: `${item.month} ${item.year}`,
+      }));
 
     return (
 
         <div>
-            <h1 className='my-3'>All-Time Cashflow</h1>     
+            <h1 className='my-3'>Cashflow Trends</h1>
+
+            <Accordion.Header>
+            <Form.Select 
             
-            <Link to="/" className="btn btn-primary">Home</Link>  
+            aria-label="Default select example"
+            onChange={(e) => {setSelectedYear(e.target.value)}}
+            value={selectedYear}
+
+          >
+            <option value="">Select a year</option>
+            {availableYears.map(year => (
+                <option key={year} value={year}>
+                    {year}
+                </option>
+            ))}
+            </Form.Select>
+            </Accordion.Header>
 
             <BarChart
             width={500}
             height={300}
-            data={ combinedMonthlyData }
+            data={ barChartDataByTransactionTypeWithDate }
             margin={{
                 top: 5,
                 right: 30,
@@ -100,49 +137,23 @@ function TrendsScreen() {
             }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis  dataKey= "month">
-                    <Label value="Month" position="insideBottom" offset={-5} />
+                <XAxis  
+                    dataKey = "date"
+                >
+                    <Label value="Date" position="insideBottom" offset={-5} />
                 </XAxis>
                 <YAxis  unit="$">
                     <Label value="USD" position="left" offset={-7}/>
                 </YAxis>
                 <Tooltip />
                 <Legend />
-                <Bar dataKey= "income" fill="#82ca9d" />
-                <Bar dataKey= "expense" fill="#8884d8" />
-                <Bar dataKey= "investment" fill="#ab56d8" />
-                <Bar dataKey= "net" fill="#ffc658" /> 
+                <Bar dataKey= "Deposit" fill="#82ca9d" />
+                <Bar dataKey= "Expense" fill="#8884d8" />
+                <Bar dataKey= "Investment" fill="#ab56d8" />
+                <Bar dataKey= "Net" fill="#ffc658" /> 
             </BarChart>
 
-            
-            <BarChart
-            width={500}
-            height={300}
-            data={ combinedCategoryData }
-            margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-            }}
-            >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis  dataKey= "month">
-                    <Label value="Month" position="insideBottom" offset={-5} />
-                </XAxis>
-                <YAxis  unit="$">
-                    <Label value="USD" position="left" offset={-7}/>
-                </YAxis>
-                <Tooltip />
-                <Legend />
-
-                {Object.keys(combinedCategoryData[0]).filter(key => key !== "month").map((key, index) => (
-                   <Bar key={index} dataKey= {key} fill={`#${Math.floor(Math.random() * 16777215).toString(16)}`} />
-                ))}
-
-                
-              
-            </BarChart>
+           
 
         </div>
     
