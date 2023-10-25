@@ -57,8 +57,15 @@ export const transactionSlice = createSlice({
             state.deleteTransactionFailure = payload;
             state.deleteTransactionSuccess = null;
         },
-        editTransaction: (state, { payload }) => {
-            state.transactions.push(payload);
+        editTransaction: (state, { payload }) => {  
+            state.transactions = state.transactions.map((transaction) => { // creates a new modified array of transactions and iterates through each transaction
+                if (transaction.id === payload.id) { // checks if the id of the current transaction (transaction.id) matches the edited transaction id (payload.id)
+                    return payload; // If the IDs match, it returns the payload, which is the edited transaction. This effectively replaces the existing transaction with the edited one in the new array being created.
+                } else {
+                    return transaction; //  If the IDs don't match, it returns the original transaction unchanged, preserving the transactions that I didn't edit.
+                }
+
+            })
         },
         toggleEditTransactionForm: (state) => {
             state.isEditingTransaction = !state.isEditingTransaction;
@@ -115,7 +122,7 @@ export function fetchTransactions() {
 
 //API call to delete a transaction from the /api/transactions/ API endpoint on the Django backend
 export const deleteTransactionAsync = (transactionId) => async (dispatch) => {
-    try{
+    try {
         await axios.delete(`/api/transactions/delete/${transactionId}`);
         dispatch(deleteTransaction(transactionId));
         dispatch(deleteTransactionSuccess('Transaction deleted successfully!'))

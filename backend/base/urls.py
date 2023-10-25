@@ -12,5 +12,6 @@ urlpatterns = [
     path('transactions/update/<str:pk>/', views.updateTransaction, name='transaction-update'),
     path('transactions/<str:pk>/', views.getTransaction, name='transaction'),
     path('transaction-model-fields-and-types/', views.get_transaction_model_fields_and_types, name='transaction-model-fields-and-types'),
+    path('transaction-model-form-data-choices/', views.get_transaction_model_form_data_choices, name='transaction-model-form-data-choices'),
     
 ]

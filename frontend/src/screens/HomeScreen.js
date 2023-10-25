@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { fetchTransactions, transactionSelector, toggleAddTransactionForm, deleteTransactionAsync, updateTransactionAsync } from '../features/transactionSlice'
+import { fetchTransactions, transactionSelector, toggleAddTransactionForm, deleteTransactionAsync } from '../features/transactionSlice'
 import { Accordion, Button, Form } from 'react-bootstrap'
 import Transaction from '../components/Transaction'
 import Loader from '../components/Loader'
@@ -15,8 +15,6 @@ function HomeScreen() {
   const isAddingTransaction = useSelector((state) => state.transactions.isAddingTransaction);
 
   const [selectedYear, setSelectedYear] = useState('');
-  console.log('Initial state of selectedYear:', selectedYear);
-  console.log('Initial array of transactions from Redux store:', transactions)
 
   const handleDeleteTransaction = (transactionId) => {
     dispatch(deleteTransactionAsync(transactionId))
@@ -56,13 +54,6 @@ function HomeScreen() {
     )); 
   };
 
-  /* TO DO: make renderTransactionForm a function 
-  const renderTransactionForm = () => {
-
-  }
-  */
-
-  
 
   return (
     <div>

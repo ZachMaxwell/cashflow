@@ -23,9 +23,11 @@ def getRoutes(request):
         "/api/transactions/delete/<str:pk>/",
         "/api/transactions/update/<str:pk>/",
         "/api/transaction-model-fields-and-types/",
-        "/api/login/",
+        "/api/transaction-model-form-data-choices/",
+        #"/api/login/",
 
     ]
+    
     
     return Response(routes)
 
@@ -81,6 +83,21 @@ def get_transaction_model_fields_and_types(request):
         fields_and_types[field_name] = field_type
 
     return Response({'fields_and_types': fields_and_types})
+
+@api_view(['GET'])
+def get_transaction_model_form_data_choices(request):
+    model = Transaction
+    form_data_choices = {}
+
+    for field in model._meta.get_fields():
+        if field.choices:
+            field_name = field.name
+            form_data_choice = field.choices
+            form_data_choices[field_name] = form_data_choice
+        else:
+            form_data_choices[field.name] = ''
+
+    return Response({'form_data_choices': form_data_choices})
 
 @api_view(['POST'])
 def login_view(request):

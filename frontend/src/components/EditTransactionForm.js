@@ -57,6 +57,9 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+
+        console.log(`Changing ${name} to:`, value);
+        
         setFormData({ 
             ...formData,  
             [name]: value 
