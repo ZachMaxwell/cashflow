@@ -104,7 +104,7 @@ export const {
 
 export const transactionSelector = (state) => state.transactions;
 
-//API call to fetch the transactions from the /api/transactions/ API endpoint on the Django backend
+//API call to get the transactions from the /api/transactions/ API endpoint on the Django backend
 export function fetchTransactions() {
     return async (dispatch) => {
       dispatch(getTransactions())
