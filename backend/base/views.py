@@ -9,6 +9,23 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login, authenticate
 from django.views.decorators.csrf import csrf_exempt
 import json
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        # Overriding the validate method to add more data to the response. 
+        # Makes it a lot easier to use this data in the frontend. Don't have to decode the token every time I want to get this data
+        data['username'] = self.user.username
+        data['first_name'] = self.user.first_name
+        data['email'] = self.user.email
+
+        return data
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
 
 
 @api_view(['GET'])
@@ -16,7 +33,6 @@ def getRoutes(request):
 
     routes = [
 
-        
         "/api/transactions/",
         "/api/transactions/<str:pk>/",
         "/api/transactions/create/",
@@ -24,10 +40,8 @@ def getRoutes(request):
         "/api/transactions/update/<str:pk>/",
         "/api/transaction-model-fields-and-types/",
         "/api/transaction-model-form-data-choices/",
-        #"/api/login/",
 
     ]
-    
     
     return Response(routes)
 

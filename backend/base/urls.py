@@ -1,10 +1,12 @@
 from django.urls import path
 from . import views
 
+    
+
 
 urlpatterns = [
 
-    path('login/', views.login_view, name='login'),
+    path('users/login/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('', views.getRoutes, name='routes'),
     path('transactions/', views.getTransactions, name='transactions'),
     path('transactions/create/', views.createTransaction, name='transaction-create'),
