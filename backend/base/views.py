@@ -95,9 +95,13 @@ def get_transaction_model_fields_and_types(request):
     fields_and_types = {}
 
     for field in model._meta.get_fields():
-        field_name = field.name
-        field_type = field.get_internal_type()
-        fields_and_types[field_name] = field_type
+        print(field)
+        if field.name == 'user' or field.name == 'id':
+            continue
+        else:
+            field_name = field.name
+            field_type = field.get_internal_type()
+            fields_and_types[field_name] = field_type
 
     return Response({'fields_and_types': fields_and_types})
 
@@ -112,7 +116,7 @@ def get_transaction_model_form_data_choices(request):
             form_data_choice = field.choices
             form_data_choices[field_name] = form_data_choice
         else:
-            form_data_choices[field.name] = ''
+            continue
 
     return Response({'form_data_choices': form_data_choices})
 

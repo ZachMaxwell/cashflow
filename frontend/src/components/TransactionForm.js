@@ -54,6 +54,8 @@ function TransactionForm() {
           const fieldsAndTypes = response.data.fields_and_types;
           // gets the key value from fieldsAndTypes object which is the name of the field
           const fieldNames = Object.keys(fieldsAndTypes);
+          console.log('fieldNames', fieldNames);
+          console.log('fieldsAndTypes', fieldsAndTypes);
         
         // setFields now contains the fieldNames
         setFields(fieldNames);
@@ -163,9 +165,7 @@ function TransactionForm() {
   console.log('this is the form data:', formData);
   
   return (
-    //.filter(fieldName => fieldName !== 'id')
     
-
     <Form onSubmit={handleSubmit}>
       {fields.map((fieldName) => (
         <div key={fieldName} className="form-group row">

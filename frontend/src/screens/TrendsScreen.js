@@ -109,20 +109,20 @@ function TrendsScreen() {
             <h1 className='my-3'>Cashflow Trends</h1>
 
             <Accordion.Header>
-            <Form.Select 
+                <Form.Select 
             
-            aria-label="Default select example"
-            onChange={(e) => {setSelectedYear(e.target.value)}}
-            value={selectedYear}
+                    aria-label="Default select example"
+                    onChange={(e) => {setSelectedYear(e.target.value)}}
+                    value={selectedYear}
 
-          >
-            <option value="">Select a year</option>
-            {availableYears.map(year => (
-                <option key={year} value={year}>
-                    {year}
-                </option>
-            ))}
-            </Form.Select>
+                    >
+                    <option value="">Select a year</option>
+                    {availableYears.map(year => (
+                        <option key={year} value={year}>
+                            {year}
+                        </option>
+                    ))}
+                </Form.Select>
             </Accordion.Header>
 
             <BarChart

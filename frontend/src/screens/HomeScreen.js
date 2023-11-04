@@ -16,6 +16,8 @@ function HomeScreen() {
 
   const [selectedYear, setSelectedYear] = useState('');
 
+  const availableYears = [...new Set(transactions.map(transaction => transaction.year))];
+
   const handleDeleteTransaction = (transactionId) => {
     dispatch(deleteTransactionAsync(transactionId))
     console.log('In handleDeleteTransaction - The transactionId passed in is: ', transactionId);
@@ -69,32 +71,30 @@ function HomeScreen() {
           <Accordion defaultActiveKey={['0']} alwaysOpen>
             <Accordion.Item eventKey="0">
               
-            <Accordion.Header>
-            
-            <Form.Select 
-            
-              aria-label="Default select example"
-              onChange={(e) => {setSelectedYear(e.target.value)}}
-              value={selectedYear}
-
-            >
-              <option>Select a year</option>
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-            </Form.Select>
-
-
-            </Accordion.Header>
-             
-
-              { renderTransactions() }
-        
+              <Accordion.Header>
               
+                <Form.Select 
+                
+                  aria-label="Default select example"
+                  onChange={(e) => {setSelectedYear(e.target.value)}}
+                  value={selectedYear}
+
+                >
+                  <option value="">Select a year</option>
+                  {availableYears.map(year => (
+                  <option key={year} value={year}>
+                      {year}
+                  </option>
+                  ))}
+
+                </Form.Select>
+
+              </Accordion.Header>
+             
+              { renderTransactions() }
               
             </Accordion.Item>
-            </Accordion>
+          </Accordion>
     </div>
   );
 }
