@@ -35,6 +35,7 @@ class UserSerializerWithToken(UserSerializer):
     
     def get_token(self, obj):
         token = RefreshToken.for_user(obj) #token is equal to the current token associated with the current user object
+        print('inside user serialize with token', token)
         return str(token.access_token)
 
 

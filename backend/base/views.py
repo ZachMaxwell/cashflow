@@ -12,6 +12,7 @@ from rest_framework import status
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
+        print(data)
         
         '''
         # Overriding the validate method to add more data to the response. 
@@ -24,6 +25,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         for k, v in serializer.items(): # loop through all the fields in the UserSerializerWithToken class
             data[k] = v #update the data dictionary with the data from the UserSerializerWithToken class
+        
+        print(data)
 
         return data
 
@@ -142,7 +145,7 @@ def registerUser(request):
             first_name = data['name'],
             username = data['email'],
             email = data['email'],
-            password = make_password(data['password'])
+            password = data['password'] # removed make_password() because it was giving me a bug when trying to log in with a user I had just registered (not from the admin panel). Inside the User model, the set_password method already takes care of the password hashing, so I was hashing the password twice causing login errors. 
         )
         serializer = UserSerializerWithToken(user, many=False) # using the UserSerializerWithToken makes it possible to get the 'token' right away (upon creation of the user). Will make it possible to log in a user right away upon creation in the frontend
     except:

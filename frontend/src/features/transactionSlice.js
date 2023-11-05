@@ -100,7 +100,7 @@ export const {
     editTransactionFailure,
     
 
-    } = transactionSlice.actions;
+} = transactionSlice.actions;
 
 export const transactionSelector = (state) => state.transactions;
 
@@ -118,7 +118,7 @@ export function fetchTransactions() {
         dispatch(getTransactionsFailure(error))
       }
     }
-  };
+};
 
 //API call to delete a transaction from the /api/transactions/ API endpoint on the Django backend
 export const deleteTransactionAsync = (transactionId) => async (dispatch) => {

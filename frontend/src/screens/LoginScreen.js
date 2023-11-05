@@ -1,73 +1,86 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import AlertMessage from '../components/AlertMessage';
+import Loader from '../components/Loader';
+import { loginUser } from '../features/authSlice';
+import { useNavigate } from 'react-router-dom';
+import { Button, Form } from 'react-bootstrap';
 
-function LoginScreen() {
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
+const LoginScreen = () => {
+  const { register, handleSubmit } = useForm();
+  const { loading, userInfo, error } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  
+  useEffect(() => {
+    if (userInfo) {
+      navigate('/') // redirects user to dashboard if they are logged in already
+    }
+  }, [navigate, userInfo])
+  
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Here, you can send the formData to your backend for authentication
-    // For example, using Axios or the fetch API.
-    // Don't forget to handle the response from the server.
+  const navigateToRegister = () => {
+    navigate('/register')
+  }
 
-    axios.post('/api/login/', {
-        username: 'your_username',
-        password: 'your_password',
-    })
-    .then(response => {
-        // Handle a successful login here
-        console.log('Login response:', response.data);
-    })
-    .catch(error => {
-        // Handle login failure here
-        console.error('Login error:', error);
-    });
-
-    console.log('Form Data:', formData);
-    // Add your authentication logic here.
-  };
+  const submitForm = (data) => {
+    dispatch(loginUser(data))
+  }
 
   return (
-    <div className="login-container">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="username">Username or Email:</label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <button type="submit">Login</button>
-      </form>
-    </div>
-  );
+
+    <Form onSubmit={handleSubmit(submitForm)}>
+      {error && <AlertMessage type='danger' message={error} />}
+
+      <div className="text-center mt-3">
+        <h2>Login <span role="img" aria-label="Lock">🔒</span></h2>
+      </div>
+      
+      <Form.Group>
+        <Form.Label>Email</Form.Label>
+        <Form.Control 
+          type='email'
+          {...register('email')}
+          required
+        />
+      </Form.Group>
+
+      <Form.Group>
+        <Form.Label>Password</Form.Label>
+        <Form.Control 
+          type='password' 
+          {...register('password')}
+          required
+        />
+      </Form.Group>
+
+      <Form.Group className="mt-3 mb-3">
+        <Button 
+          type='submit' 
+          variant='outline-light'
+          size='sm' 
+          disabled={loading} 
+          >
+          {loading ? <Loader /> : 'Login'}
+        </Button>
+
+        <Button 
+          onClick={navigateToRegister} 
+          variant='outline-light' 
+          size='sm' 
+          style={{marginLeft: '20px'}}
+          >
+          Sign up 
+        </Button>
+      </Form.Group>
+
+    </Form>
+    
+  )
 }
 
-export default LoginScreen;
+export default LoginScreen

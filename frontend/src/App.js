@@ -9,6 +9,8 @@ import NetworthScreen from './screens/NetworthScreen'
 import BudgetScreen from './screens/BudgetScreen'
 import TransactionDetailsScreen from './screens/TransactionDetailsScreen'
 import LoginScreen from './screens/LoginScreen'
+import RegisterScreen from './screens/RegisterScreen'
+import UserProfileScreen from './screens/UserProfileScreen'
 
 function App() {
   return (
@@ -31,6 +33,10 @@ function App() {
             <Route  path="/budget" element={ <BudgetScreen /> } />
 
             <Route path="/login" element={ <LoginScreen />} />
+
+            <Route path="/register" element={ <RegisterScreen />} />
+
+            <Route path="/user-profile" element={ <UserProfileScreen />} />
 
           </Routes>
         </Container>  
