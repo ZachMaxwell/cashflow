@@ -105,11 +105,23 @@ export const {
 export const transactionSelector = (state) => state.transactions;
 
 //API call to get the transactions from the /api/transactions/ API endpoint on the Django backend
+/*
 export function fetchTransactions() {
+
     return async (dispatch) => {
-      dispatch(getTransactions())
+        dispatch(getTransactions())
   
-      try {
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${userInfo.token}`
+                }
+
+            }
+
+
+
         const response = await axios.get('/api/transactions/');
         const data = response.data
   
@@ -119,9 +131,10 @@ export function fetchTransactions() {
       }
     }
 };
+*/
 
 //API call to delete a transaction from the /api/transactions/ API endpoint on the Django backend
-export const deleteTransactionAsync = (transactionId) => async (dispatch) => {
+export const deleteATransaction = (transactionId) => async (dispatch) => {
     try {
         await axios.delete(`/api/transactions/delete/${transactionId}`);
         dispatch(deleteTransaction(transactionId));

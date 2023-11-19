@@ -1,14 +1,12 @@
 import React from 'react'
-import { Link } from 'react-router-dom';
-
 
 function NetworthScreen() {
   return (
     <div>
         
-        <h1>Networth Screen</h1>
-        
-        <Link to="/" className="btn btn-primary">Home</Link>
+        <h1 className='my-3'><strong>Net Worth</strong></h1>
+
+        <h3>Coming soon...</h3>
 
     </div>
   );

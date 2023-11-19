@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 
 export const transactionDetailsSlice = createSlice({
 
@@ -33,23 +32,3 @@ export const { getTransactionDetails, getTransactionDetailsSuccess, getTransacti
 export const transactionDetailsSelector = (state) => state.transaction;
 
 export default transactionDetailsSlice.reducer;
-
-export function fetchTransactionDetails(id) {
-    return async (dispatch) => {
-      dispatch(getTransactionDetails());
-  
-      try {
-        console.log('API Request:', `/api/transactions/${id}`); // Log the request to the console
-        const response = await axios.get(`/api/transactions/${id}`);
-        const data = response.data;
-        console.log('API Response:', data); // Log the response data
-
-  
-        dispatch(getTransactionDetailsSuccess(data))
-      } catch (error) {
-        console.log('API Error:', error); // Log the error to the console
-        
-        dispatch(getTransactionDetailsFailure(error))
-      }
-    }
-  };

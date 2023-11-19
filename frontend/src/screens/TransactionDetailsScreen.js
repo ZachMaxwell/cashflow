@@ -3,58 +3,32 @@ import { useParams } from 'react-router-dom'
 import Loader from '../components/Loader'
 import { Card } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchTransactionDetails, transactionDetailsSelector } from '../features/transactionDetailsSlice'
+import { transactionDetailsSelector } from '../features/transactionDetailsSlice'
 import AlertMessage from '../components/AlertMessage'
-
-/*
-function TransactionDetailScreen( {match} ) {
-    const {id} = useParams()
-    const [transaction, setTransaction] = useState(null)
-
-
-    useEffect(() => {
-        async function fetchTransaction(){
-            
-            try {
-                const response = await axios.get(`/api/transactions/${id}`)
-                setTransaction(response.data)
-            } catch (error) {
-                console.log('Error fetching transaction: ', error)
-            }
-        }
-
-        fetchTransaction()
-    }, [id]);
-*/
+import { fetchTransaction } from '../utils/api'
 
 function TransactionDetailScreen() {
     const { id } = useParams();
-    console.log('ID: ', id)
     
     const dispatch = useDispatch();
+
     const { transaction, loading, error } = useSelector(transactionDetailsSelector);
-    console.log('right before useEffect...')
+    const { userInfo } = useSelector((state) => state.auth);
 
     useEffect(() => {
-        console.log('Fetching transaction details for ID:', id)
-        dispatch(fetchTransactionDetails(id));
-
-
-    }, [dispatch, id]);
-
-    console.log('transaction: ', transaction)
-
+        if (userInfo) {
+           fetchTransaction(userInfo, id, dispatch)
+        }
+    }, [id, userInfo, dispatch]);
     
     if (loading) { 
         return <Loader />;
-
     }
 
     if (error) { 
         return <AlertMessage variant='danger' message={error.message} />;
     }
     
-
     let result_amount;
     if (transaction) {
         if (transaction.category === 'Income') {

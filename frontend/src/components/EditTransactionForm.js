@@ -3,11 +3,13 @@ import { useDispatch } from 'react-redux';
 import { editTransaction, editTransactionSuccess, editTransactionFailure } from '../features/transactionSlice';
 import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
-import AUTH_TOKEN from '../config_DELETEME';
+import { useSelector } from 'react-redux';
 
 function EditTransactionForm({ transaction, onSave, onCancel }) {
 
     const dispatch = useDispatch();
+
+    const { userInfo, userToken } = useSelector((state) => state.auth);
 
     const [formData, setFormData] = useState({});
     const [fields, setFields] = useState([]);
@@ -69,12 +71,20 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const formDataWithUserID = {
+          ...formData,
+          user: userInfo.user_id
+        }
+
         try {
-            const response = await axios.put(`/api/transactions/update/${transaction.id}/`, formData, {
+            const response = await axios.put(`/api/transactions/update/${transaction.id}/`, formDataWithUserID, {
                 headers: {
-                    'Authentication': `${AUTH_TOKEN}`
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${userInfo.token}`
                 }
             });
+            console.log('In EditTransactionForm -> handleSubmit: This is the response being sent from the backend after POST', response);
 
             if (response.status === 201) {
                 onSave(response.data);

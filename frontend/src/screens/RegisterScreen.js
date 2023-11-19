@@ -36,7 +36,7 @@ const RegisterScreen = () => {
             {error && <AlertMessage type='danger' message={error} />}
 
             <div className="text-center mt-3">
-                <h2>Sign Up<span role="img" aria-label="Lock">✍</span></h2>
+                <h2>Create an account<span role="img" aria-label="Lock">✍</span></h2>
             </div>
             
             <Form.Group>

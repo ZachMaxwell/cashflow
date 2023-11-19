@@ -28,7 +28,7 @@ function Transaction({ transaction, onDelete, onEdit }) {
     return (
     
         <Card className="my-3 p-3 rounded">
-        <Link to={`transaction/${transaction.id}`}> 
+        <Link to={`transactions/${transaction.id}`}> 
             <Card.Body>
 
                 <Card.Title as="h4">
@@ -56,7 +56,7 @@ function Transaction({ transaction, onDelete, onEdit }) {
             onClick={() => onDelete(transaction.id)} variant="danger"
         >
             Delete
-        </Button>
+        </Button>{' '}
         
         <Button
             style={{ padding: '5px 10px', fontSize: '14px', marginRight: '100px' }}

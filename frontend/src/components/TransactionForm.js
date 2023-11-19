@@ -3,16 +3,19 @@ import { useDispatch } from 'react-redux';
 import { addTransaction, addTransactionSuccess, addTransactionFailure } from '../features/transactionSlice';
 import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
-import AUTH_TOKEN from '../config_DELETEME';
+import { useSelector } from "react-redux";
 
 function TransactionForm() {
 
   const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({});
   const [fields, setFields] = useState([]);
   const [fieldTypes, setFieldTypes] = useState({});
   const [formChoices, setFormChoices] = useState({});
-  
+
+  const { userInfo } = useSelector((state) => state.auth);
+
   const fieldDisplayNames = {
     user: 'User',
     amount: 'Amount',
@@ -35,7 +38,7 @@ function TransactionForm() {
 
   useEffect(() => {
     
-    // NEW - trying to get the form data choices
+    // Getting the form data choices (for those of them that have choices in the db)
     axios.get('/api/transaction-model-form-data-choices')
       .then((response) => {
         if (response.data.form_data_choices) {
@@ -57,9 +60,9 @@ function TransactionForm() {
           console.log('fieldNames', fieldNames);
           console.log('fieldsAndTypes', fieldsAndTypes);
         
-        // setFields now contains the fieldNames
+        // setFields now contains the fieldNames as an array (e.g. [amount, day, month, year, category, transaction_type, description, account])
         setFields(fieldNames);
-        // setFieldTypes now contains the fieldTypes
+        // setFieldTypes now contains the fieldsAndTypes as an object (e.g. {amount: 'DecimalField', day: 'CharField', etc.})
         setFieldTypes(fieldsAndTypes);
         // set initialForm data to an empty array
         const initialFormData = {};
@@ -77,7 +80,7 @@ function TransactionForm() {
             initialFormData[fieldName] = '';
           }
         });
-        // Set state for setFormData to the initialFormData
+        // Set state for setFormData to the initialFormData based on the above forEach statement
         setFormData(initialFormData);
 
        } else {
@@ -95,11 +98,12 @@ function TransactionForm() {
     // if the "value", (e.g. the value in the drop down that comes from the form_data_choices API call) includes a comma, then split the string 
     // and take the first value (e.g. "Aug")
     if (value.includes(',')) {
+      console.log(value)
       const firstValueChoice = value.split(',')[0];
 
       console.log(`Changing ${name} to:`, firstValueChoice);
 
-      // takes the already existing form data (e.g. ...formData), and updates the state to include the updated name, value pair (e.g. "month": "Aug")
+      // takes the already existing form data (e.g. ...formData), and updates the formData state to include the updated name, value pair (e.g. "month": "Aug")
       setFormData({
         ...formData,
         [String(name)]: firstValueChoice,
@@ -120,25 +124,21 @@ function TransactionForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // DELETE: Separating out the ID field for testing purposes
-    console.log('Form Data at handle submit:', formData); 
-    const {id, ...formDataWithoutId} = formData;
-    console.log('Form Data without id at handle submit:', formDataWithoutId);
-
-    // DELETE: Hard-coding the user value to 1 for testing purposes 
-    formDataWithoutId.user = 1;
-    console.log('Form Data without id and user at handle submit:', formDataWithoutId);
-
-    //dispatch(addTransaction(formDataWithoutId));
+    const formDataWithUserID = {
+      ...formData,
+      user: userInfo.user_id
+    }
+    console.log('Form Data with user ID in TransactionForm -> handleSubmit:', formDataWithUserID); 
 
     try {
       // Make a POST request using Axios
-      const response = await axios.post('/api/transactions/create/', formDataWithoutId, {
+      const response = await axios.post('/api/transactions/create/', formDataWithUserID, {
         headers: {
-          'Authentication': `${AUTH_TOKEN}`
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${userInfo.token}`
         }
       });
-      console.log('This is the response being sent to the backend', response);
+      console.log('In TransactionForm -> handleSubmit: This is the response being sent from the backend after POST', response);
   
       // Check if the request was successful
       if (response.status === 201) {
@@ -161,8 +161,6 @@ function TransactionForm() {
       dispatch(addTransactionFailure('Error adding transaction: ', error.message));
     }
   };
-
-  console.log('this is the form data:', formData);
   
   return (
     
@@ -204,7 +202,6 @@ function TransactionForm() {
         Add Transaction
       </Button>
     </Form>
-
   );
 };
 

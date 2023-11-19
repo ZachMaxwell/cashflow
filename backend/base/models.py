@@ -5,9 +5,9 @@ class Transaction(models.Model):
 
     CATEGORY_CHOICES = [ 
         ('Going out & Eating out', 'Going out & Eating out'),
-        ('Car, Gas, & Auto Insurance', 'Car, Gas, & Auto Insurance'),
+        ('Car & Gas & Auto Insurance', 'Car & Gas & Auto Insurance'),
         ('Rent & Utilities', 'Rent & Utilities'),
-        ('Travel, Personal, & Other', 'Travel, Personal, & Other'),
+        ('Travel & Personal & Other', 'Travel & Personal & Other'),
         ('Loans', 'Loans'),
         ('Savings & Investments', 'Savings & Investments'),
         ('Subscriptions', 'Subscriptions' ),
@@ -79,7 +79,7 @@ class Transaction(models.Model):
     year = models.CharField(max_length=4, null=False, blank=False)
     description = models.CharField(max_length=100, null=True, blank=True)
     transaction_type = models.CharField(max_length=10, choices = TRANSACTION_TYPE_CHOICES, default = 'Expense',null=False, blank=False)
-    category = models.CharField(max_length=75, choices = CATEGORY_CHOICES, default = 'Travel, Personal, & Other',null=False, blank=False)
+    category = models.CharField(max_length=75, choices = CATEGORY_CHOICES, default = 'Travel & Personal & Other',null=False, blank=False)
     account = models.CharField(max_length=10, null=True, blank=True)
     id = models.AutoField(primary_key=True, editable=False)
     

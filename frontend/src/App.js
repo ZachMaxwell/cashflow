@@ -11,6 +11,7 @@ import TransactionDetailsScreen from './screens/TransactionDetailsScreen'
 import LoginScreen from './screens/LoginScreen'
 import RegisterScreen from './screens/RegisterScreen'
 import UserProfileScreen from './screens/UserProfileScreen'
+import ProtectedRoute from './routing/ProtectedRoute'
 
 function App() {
   return (
@@ -22,22 +23,34 @@ function App() {
         <Container>
           <Routes>
           
-            <Route  path="/" element={ <HomeScreen /> } />
+            <Route element={ <ProtectedRoute /> }>
+              <Route  path="/" element={ <HomeScreen /> } />
+            </Route>
 
-            <Route  path="/transaction/:id" element={ <TransactionDetailsScreen /> } />
+            <Route element={ <ProtectedRoute /> }>
+              <Route  path="/transactions/:id" element={ <TransactionDetailsScreen /> } />
+            </Route>
 
-            <Route  path="/trends" element={ <TrendsScreen /> } />
+            <Route element={ <ProtectedRoute /> }>
+              <Route  path="/trends" element={ <TrendsScreen /> } />
+            </Route>
 
-            <Route  path="/networth" element={ <NetworthScreen /> } />
+            <Route element={ <ProtectedRoute /> }>
+              <Route  path="/networth" element={ <NetworthScreen /> } />
+            </Route>
 
-            <Route  path="/budget" element={ <BudgetScreen /> } />
+            <Route element={ <ProtectedRoute /> }> 
+              <Route  path="/budget" element={ <BudgetScreen /> } />
+            </Route>
 
             <Route path="/login" element={ <LoginScreen />} />
 
             <Route path="/register" element={ <RegisterScreen />} />
 
-            <Route path="/user-profile" element={ <UserProfileScreen />} />
-
+            <Route element={ <ProtectedRoute />}>
+              <Route path="/user-profile" element={ <UserProfileScreen />} />
+            </Route>
+            
           </Routes>
         </Container>  
         </main>

@@ -53,15 +53,24 @@ def getRoutes(request):
 '''
     
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getTransactions(request):
-    transactions = Transaction.objects.all()
+    # gets the user associated with the request (e.g. the logged in user)
+    user = request.user
+    # filters the transactions by the user ID
+    transactions = Transaction.objects.filter(user=user)
     serializer = TransactionSerializer(transactions, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def getTransaction(request, pk):
-    transaction = Transaction.objects.get(id=pk)
-    serializer = TransactionSerializer(transaction, many=False)
+    user = request.user
+    transaction = Transaction.objects.filter(id=pk, user=user)
+    if not transaction.exists():
+        return Response({'detail': 'Transaction not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = TransactionSerializer(transaction.first(), many=False)
     return Response(serializer.data)
 
 @api_view(['POST'])

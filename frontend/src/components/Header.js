@@ -16,9 +16,10 @@ function Header() {
     useEffect(() => {
         if (userToken) {
             console.log('place holder for auto authenticate user', userInfo)
+            //dispatch(getUserDetails())
         }
 
-    })
+    }, [userToken, userInfo, dispatch])
 
     return (
       <header>
@@ -55,23 +56,18 @@ function Header() {
               </Nav>
             </Navbar.Collapse>
   
-            
-            <span>
-            {userInfo ? `Logged in as ${userInfo.username}` : null}
-            </span>
-
             {userInfo ? (
-            <Button variant="link" size="sm" className='button' onClick={() => dispatch(logout())}>
-                <span role="img" aria-label="Rocket">🚀</span>Logout
-            </Button>
-                ) : (
-            <NavLink className='button' to='/login'>
-              <span role="img" aria-label="User">👤</span>Login
-            </NavLink>
-          )}
-
-             
-            
+              <div>
+                <span>Logged in as {userInfo.username}</span>
+                <Button variant="link" size="sm" className='button' onClick={() => dispatch(logout())}>
+                  <span role="img" aria-label="Rocket">🚀</span>Logout
+                </Button>
+              </div>
+            ) : (
+              <NavLink className='button' to='/login'>
+                <span role="img" aria-label="User">👤</span>Login
+              </NavLink>
+            )}
           </Container>
         </Navbar>
       </header>
