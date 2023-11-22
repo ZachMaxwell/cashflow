@@ -4,12 +4,13 @@ import { editTransaction, editTransactionSuccess, editTransactionFailure } from 
 import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { fetchTransactionModelFieldsAndTypes } from '../utils/api';
 
 function EditTransactionForm({ transaction, onSave, onCancel }) {
 
     const dispatch = useDispatch();
 
-    const { userInfo, userToken } = useSelector((state) => state.auth);
+    const { userInfo } = useSelector((state) => state.auth);
 
     const [formData, setFormData] = useState({});
     const [fields, setFields] = useState([]);
@@ -22,7 +23,7 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
         month: 'Month',
         year: 'Year',
         description: 'Description',
-        transaction_type: 'Expense, Income or Savings & Investment',
+        transaction_type: 'Type of transaction',
         category: 'Category',
         account: 'Account',
       };
@@ -36,21 +37,19 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
       };
     
     useEffect(() => {
-        axios.get('/api/transaction-model-fields-and-types')
-            .then((response) => {
-                if (response.data.fields_and_types) {
-                    const fieldsAndTypes = response.data.fields_and_types;
-                    const fieldNames = Object.keys(fieldsAndTypes);
-                    setFields(fieldNames);
-                    setFieldTypes(fieldsAndTypes);
-                } else {
-                    console.log('Unexpected response format: ', response.data);
-                }
-            })
-            .catch((error) => {
-                console.log('Error fetching fields and types:', error);
-            });
-    }, []);
+       const fetchBackendMetaData = async () => {
+        if (userInfo) {
+          try {
+            const { fieldNames, fieldsAndTypes } = await fetchTransactionModelFieldsAndTypes(userInfo, dispatch);
+            setFields(fieldNames);
+            setFieldTypes(fieldsAndTypes);
+          } catch (error) {
+            console.log('Error fetching backend metadata', error);  
+          }
+        }
+      }
+       fetchBackendMetaData();
+    }, [userInfo, dispatch]);
 
     useEffect(() => {
         setFormData(transaction);
@@ -123,10 +122,18 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
                 </div>
               </div>
             ))}
-            <Button type="submit" variant="primary">
+            <Button 
+              type="submit" 
+              variant="primary"
+              style={{ padding: '5px 10px', fontSize: '14px' }}
+            >
               Save
-            </Button>
-            <Button variant="secondary" onClick={onCancel}>
+            </Button>{' '}
+            <Button 
+              variant="secondary" 
+              onClick={onCancel}
+              style={{ padding: '5px 10px', fontSize: '14px' }}
+            >
               Cancel
             </Button>
           </Form>

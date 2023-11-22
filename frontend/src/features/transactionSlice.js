@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
 
 export const transactionSlice = createSlice({
     name: 'transactions',
@@ -103,46 +102,3 @@ export const {
 } = transactionSlice.actions;
 
 export const transactionSelector = (state) => state.transactions;
-
-//API call to get the transactions from the /api/transactions/ API endpoint on the Django backend
-/*
-export function fetchTransactions() {
-
-    return async (dispatch) => {
-        dispatch(getTransactions())
-  
-        try {
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${userInfo.token}`
-                }
-
-            }
-
-
-
-        const response = await axios.get('/api/transactions/');
-        const data = response.data
-  
-        dispatch(getTransactionsSuccess(data))
-      } catch (error) {
-        dispatch(getTransactionsFailure(error))
-      }
-    }
-};
-*/
-
-//API call to delete a transaction from the /api/transactions/ API endpoint on the Django backend
-export const deleteATransaction = (transactionId) => async (dispatch) => {
-    try {
-        await axios.delete(`/api/transactions/delete/${transactionId}`);
-        dispatch(deleteTransaction(transactionId));
-        dispatch(deleteTransactionSuccess('Transaction deleted successfully!'))
-    } catch (error) {
-        dispatch(deleteTransactionFailure('Error deleting transaction: ', error.message));
-    
-    }
-};
-
-export default transactionSlice.reducer;

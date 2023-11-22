@@ -74,6 +74,7 @@ def getTransaction(request, pk):
     return Response(serializer.data)
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def createTransaction(request):
     data = request.data
     serializer = TransactionSerializer(data=data)
@@ -85,12 +86,14 @@ def createTransaction(request):
     return Response(serializer.errors, status=400)
 
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def deleteTransaction(request, pk):
     transaction = Transaction.objects.get(id=pk)
     transaction.delete()
     return Response("Item successfully deleted!")
 
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def updateTransaction(request, pk):
     transaction = Transaction.objects.get(id=pk)
     serializer = TransactionSerializer(instance=transaction, data=request.data)
@@ -102,6 +105,7 @@ def updateTransaction(request, pk):
     return Response(serializer.errors, status=400)
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_transaction_model_fields_and_types(request):
     model = Transaction
     fields_and_types = {}
@@ -118,6 +122,7 @@ def get_transaction_model_fields_and_types(request):
     return Response({'fields_and_types': fields_and_types})
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_transaction_model_form_data_choices(request):
     model = Transaction
     form_data_choices = {}

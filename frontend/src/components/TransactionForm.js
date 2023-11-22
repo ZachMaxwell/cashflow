@@ -4,6 +4,7 @@ import { addTransaction, addTransactionSuccess, addTransactionFailure } from '..
 import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useSelector } from "react-redux";
+import { fetchTransactionModelFormDataChoices, fetchTransactionModelFieldsAndTypes } from '../utils/api';
 
 function TransactionForm() {
 
@@ -23,7 +24,7 @@ function TransactionForm() {
     month: 'Month',
     year: 'Year',
     description: 'Description',
-    transaction_type: 'Expense, Income or Savings & Investment',
+    transaction_type: 'Type of transaction',
     category: 'Category',
     account: 'Account',
   };
@@ -37,60 +38,39 @@ function TransactionForm() {
   };
 
   useEffect(() => {
-    
-    // Getting the form data choices (for those of them that have choices in the db)
-    axios.get('/api/transaction-model-form-data-choices')
-      .then((response) => {
-        if (response.data.form_data_choices) {
-          const formDataChoices = response.data.form_data_choices;
-          console.log('formDataChoices', formDataChoices);
-         
-       setFormChoices(formDataChoices);
-      }
-    })
-    
-
-    axios.get('/api/transaction-model-fields-and-types')
-      .then((response) => {
-        if (response.data.fields_and_types) {
-          // gets the full array of fields with their associated types from the response object
-          const fieldsAndTypes = response.data.fields_and_types;
-          // gets the key value from fieldsAndTypes object which is the name of the field
-          const fieldNames = Object.keys(fieldsAndTypes);
-          console.log('fieldNames', fieldNames);
-          console.log('fieldsAndTypes', fieldsAndTypes);
+    const fetchBackendMetaData = async () => {
+      if (userInfo) {
+        try {
         
-        // setFields now contains the fieldNames as an array (e.g. [amount, day, month, year, category, transaction_type, description, account])
-        setFields(fieldNames);
-        // setFieldTypes now contains the fieldsAndTypes as an object (e.g. {amount: 'DecimalField', day: 'CharField', etc.})
-        setFieldTypes(fieldsAndTypes);
-        // set initialForm data to an empty array
-        const initialFormData = {};
-        // loop through the fieldNames array and set initial values for each field depending on the data type 
-        fieldNames.forEach((fieldName) => {
-          if (fieldsAndTypes[fieldName] === 'AutoField') {
-            initialFormData[fieldName] = 0;
-          } else if (initialFormData[fieldName] === 'DecimalField') {
-              initialFormData[fieldName] = 0;
-          } else if (initialFormData[fieldName] === 'CharField') {
-              initialFormData[fieldName] = '';
-          } else if (initialFormData[fieldName] === 'ForeignKey') {
-              initialFormData[fieldName] = 0;
-          } else {
-            initialFormData[fieldName] = '';
-          }
-        });
-        // Set state for setFormData to the initialFormData based on the above forEach statement
-        setFormData(initialFormData);
+          const backendModelFormChoices = await fetchTransactionModelFormDataChoices(userInfo, dispatch);
+          setFormChoices(backendModelFormChoices);
 
-       } else {
-          console.error('Unexpected response format:', response.data);
-       }
-      })
-      .catch((error) => {
-        console.log('Error fetching fields and types:', error);
-      });
-  }, []);
+          const { fieldNames, fieldsAndTypes } = await fetchTransactionModelFieldsAndTypes(userInfo, dispatch);
+          setFields(fieldNames);
+          setFieldTypes(fieldsAndTypes);
+          const initialFormData = {};
+          fieldNames.forEach((fieldName) => {
+            if (fieldsAndTypes[fieldName] === 'AutoField') {
+              initialFormData[fieldName] = 0;
+            } else if (initialFormData[fieldName] === 'DecimalField') {
+                initialFormData[fieldName] = 0;
+            } else if (initialFormData[fieldName] === 'CharField') {
+                initialFormData[fieldName] = '';
+            } else if (initialFormData[fieldName] === 'ForeignKey') {
+                initialFormData[fieldName] = 0;
+            } else {
+              initialFormData[fieldName] = '';
+            }
+          });
+          // Set state for setFormData to the initialFormData based on the above forEach statement
+          setFormData(initialFormData);
+        } catch (error) {
+            console.log('Error fetching backend metadata...', error)
+        }
+      }
+    }
+    fetchBackendMetaData();
+  }, [userInfo, dispatch]);
 
   // handleInputChange changes whenever the user makes a change (e.g. selects a value from a dropdown, or types in a value)
   const handleInputChange = (event) => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { transactionSelector, toggleAddTransactionForm, deleteATransaction } from '../features/transactionSlice'
-import { fetchTransactions } from '../utils/api'
+import { transactionSelector, toggleAddTransactionForm } from '../features/transactionSlice'
+import { fetchTransactions, deleteATransaction } from '../utils/api'
 import { Button, Form } from 'react-bootstrap'
 import Card from 'react-bootstrap/Card'
 import Transaction from '../components/Transaction'
@@ -19,12 +19,16 @@ function HomeScreen() {
   const availableYears = [...new Set(transactions.map(transaction => transaction.year))];
 
   const handleDeleteTransaction = (transactionId) => {
-    dispatch(deleteATransaction(transactionId))
+    if (userInfo) { 
+      deleteATransaction(userInfo, transactionId, dispatch) 
+    } else {
+      console.error('User information not available for delete operation');
+    }
   };
 
   useEffect(() => {
     if (userInfo) {
-    fetchTransactions(userInfo, dispatch);
+      fetchTransactions(userInfo, dispatch);
     }
   }, [userInfo, dispatch]);
   
