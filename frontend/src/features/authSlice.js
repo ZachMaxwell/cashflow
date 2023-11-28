@@ -12,7 +12,6 @@ export const registerUser = createAsyncThunk(
                 },
             }
         const { data } = await axios.post('/api/users/register/', { name, email, password }, config)
-        console.log('In registerUser - should be getting all the user info data back:', data)
         //localStorage.setItem('userInfo', JSON.stringify(data))
         //localStorage.setItem('token', JSON.stringify(data.token))
         localStorage.setItem('userInfo', data);
@@ -37,7 +36,6 @@ export const loginUser = createAsyncThunk(
                 },
             }
         const { data } = await axios.post('/api/users/login/', { 'username': email, 'password': password }, config)
-        console.log('This is the reponse being sent from the login POST request:', data);
         localStorage.setItem('userInfo', JSON.stringify(data))
         localStorage.setItem('token', JSON.stringify(data.token))
         
@@ -55,13 +53,10 @@ export const loginUser = createAsyncThunk(
 const userInfo = localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo')) // need to use JSON.parse() to parse data back into Javascript object
     : null;
-console.log('logging the user info from local storage:', userInfo);
 
 const userToken = localStorage.getItem('token')
     ? JSON.parse(localStorage.getItem('token')) 
     : null;
-console.log('logging the user token from local storage', userToken);
-
 
 export const authSlice = createSlice({ 
     name: 'auth',

@@ -5,6 +5,7 @@ import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useSelector } from "react-redux";
 import { fetchTransactionModelFormDataChoices, fetchTransactionModelFieldsAndTypes } from '../utils/api';
+import { fieldDisplayNames, databaseFieldTypesToHTMLFieldTypes } from '../utils/constants'
 
 function TransactionForm() {
 
@@ -16,26 +17,6 @@ function TransactionForm() {
   const [formChoices, setFormChoices] = useState({});
 
   const { userInfo } = useSelector((state) => state.auth);
-
-  const fieldDisplayNames = {
-    user: 'User',
-    amount: 'Amount',
-    day: 'Day',
-    month: 'Month',
-    year: 'Year',
-    description: 'Description',
-    transaction_type: 'Type of transaction',
-    category: 'Category',
-    account: 'Account',
-  };
-  
-  const databaseFieldTypesToHTMLFieldTypes = {
-    CharField: 'text',
-    DecimalField: 'number',
-    AutoField: 'number',
-    ForeignKey: 'number',
-
-  };
 
   useEffect(() => {
     const fetchBackendMetaData = async () => {
@@ -108,36 +89,29 @@ function TransactionForm() {
       ...formData,
       user: userInfo.user_id
     }
-    console.log('Form Data with user ID in TransactionForm -> handleSubmit:', formDataWithUserID); 
 
     try {
-      // Make a POST request using Axios
       const response = await axios.post('/api/transactions/create/', formDataWithUserID, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${userInfo.token}`
         }
       });
-      console.log('In TransactionForm -> handleSubmit: This is the response being sent from the backend after POST', response);
   
       // Check if the request was successful
       if (response.status === 201) {
         // Handle success & clear the form
-        setFormData({
-          // Place holder to set the form data back to empty in the future
-        });
+        setFormData({});
   
         // Dispatch addTransaction action to update the Redux store
         dispatch(addTransaction(response.data));
         dispatch(addTransactionSuccess('Transaction added successfully!'));
       } else {
         // Handle other response statuses or errors
-        console.error('Error:', response.status);
         dispatch(addTransactionFailure('Error adding transaction: ', response.status));
       }
     } catch (error) {
       // Handle network errors or other exceptions
-      console.error('Error:', error);
       dispatch(addTransactionFailure('Error adding transaction: ', error.message));
     }
   };
@@ -147,7 +121,10 @@ function TransactionForm() {
     <Form onSubmit={handleSubmit}>
       {fields.map((fieldName) => (
         <div key={fieldName} className="form-group row">
-          <label className="col-sm-3 col-form-label">{fieldDisplayNames[fieldName] || fieldName}:</label>
+          <label 
+            className="col-sm-3 col-form-label">
+              <strong>{fieldDisplayNames[fieldName] || fieldName}:</strong>
+          </label>
           <div className="col-sm-9">
             {formChoices[fieldName] ? (
               <Form.Select

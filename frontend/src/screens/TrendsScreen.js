@@ -26,7 +26,6 @@ function TrendsScreen() {
         fetchTransactions(userInfo, dispatch)
       }
     }, [userInfo, dispatch]);
-    console.log('these are all the transactions: ', transactions);
     
     //If loading is true, return the Loader component
     if (loading) {
@@ -87,7 +86,6 @@ function TrendsScreen() {
             barChartDataByTransactionTypeAndCategory.push(dataPoints);
         }
     }
-    console.log('this is the bar chart data by transaction type: ', barChartDataByTransactionTypeAndCategory);
 
     //Creates a new object where it separates out the transaction type totals and creates a new date field that includes 
     //the month and year. This is done so that the bar chart can be displayed with the month and year on the x-axis
@@ -95,7 +93,6 @@ function TrendsScreen() {
         ...item,
         date: `${item.month} ${item.year}`,
       }));
-    console.log('this is the bar chart data by transaction type with date: ', barChartDataByTransactionTypeAndCategoryWithDate);
 
     return (
 
@@ -122,8 +119,8 @@ function TrendsScreen() {
             <h3 className='my-3 py-3'><strong>Overall Breakdown By Month</strong></h3>
 
             <BarChart
-            width={500}
-            height={300}
+            width={1200}
+            height={400}
             data={ barChartDataByTransactionTypeAndCategoryWithDate }
             margin={{
                 top: 5,
@@ -156,8 +153,8 @@ function TrendsScreen() {
             <h3 className='my-3 py-3'><strong>Breakdown By Category and Month</strong></h3>
 
             <BarChart
-            width={500}
-            height={300}
+            width={1200}
+            height={400}
             data={ barChartDataByTransactionTypeAndCategoryWithDate }
             margin={{
                 top: 5,

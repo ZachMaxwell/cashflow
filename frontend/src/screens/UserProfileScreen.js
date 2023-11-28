@@ -1,14 +1,20 @@
 import React from 'react'
-import AlertMessage from '../components/AlertMessage';
+import { useSelector } from 'react-redux';
 
 
 function UserProfileScreen() {
-  
-  let currentUser = localStorage.getItem('userInfo')
+
+  const { userInfo } = useSelector(state => state.auth);
 
   return (
     <div>
-        <AlertMessage variant='success' message = {currentUser} />
+        
+        <h1>Hello, {userInfo.name} </h1>
+
+        <p>Email: {userInfo.email}</p>
+
+        <p>More coming soon...</p>
+
                 
     </div>
   )

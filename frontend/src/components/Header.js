@@ -15,7 +15,8 @@ function Header() {
     
     useEffect(() => {
         if (userToken) {
-            console.log('place holder for auto authenticate user', userInfo)
+            console.log('logged in')
+            //console.log('place holder for auto authenticate user', userInfo)
             //dispatch(getUserDetails())
         }
 
@@ -59,9 +60,17 @@ function Header() {
             {userInfo ? (
               <div>
                 <span>Logged in as {userInfo.username}</span>
+
+                <LinkContainer to="/user-profile">
+                  <Button variant="link" size="sm" className="button">
+                    <span role="img" aria-label="User">👤</span>Profile
+                  </Button>
+                </LinkContainer>
+
                 <Button variant="link" size="sm" className='button' onClick={() => dispatch(logout())}>
                   <span role="img" aria-label="Rocket">🚀</span>Logout
                 </Button>
+
               </div>
             ) : (
               <NavLink className='button' to='/login'>

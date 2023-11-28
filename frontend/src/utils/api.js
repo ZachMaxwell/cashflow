@@ -101,27 +101,6 @@ export const fetchTransactionModelFieldsAndTypes = async (userInfo, dispatch) =>
 
 };
 
-/*
-export const createTransaction = async (userInfo, formData, dispatch) => {
-    try {
-        const config = {
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userInfo.token}`
-            }
-        }
-
-        const response = await axios.post('/api/transactions/', formData, config);
-        dispatch(addTransaction(response.data));
-        dispatch(addTransactionSuccess('Transaction added successfully!'));
-
-    } catch (error) {
-
-    }
-
-}
-*/
-
 export const deleteATransaction = async (userInfo, transactionId, dispatch) => {
     try {
         const config = {
