@@ -58,6 +58,20 @@ function TransactionForm() {
     const { name, value } = event.target;
     // if the "value", (e.g. the value in the drop down that comes from the form_data_choices API call) includes a comma, then split the string 
     // and take the first value (e.g. "Aug")
+    console.log(name)
+    console.log(value)
+
+    /* 29 NOV 2023
+    if (name === 'transaction_type' && value === 'Deposit') {
+      console.log('make this so that the category auto changes to income')
+      setFormData({
+        ...formData,
+        category: 'Income',
+        [String(name)]: value,
+      });
+    }
+    */
+
     if (value.includes(',')) {
       console.log(value)
       const firstValueChoice = value.split(',')[0];

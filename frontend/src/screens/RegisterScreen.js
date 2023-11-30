@@ -32,6 +32,7 @@ const RegisterScreen = () => {
         dispatch(registerUser(data));
     }
     return (
+
         <Form onSubmit={handleSubmit(submitForm)}>
             {error && <AlertMessage type='danger' message={error} />}
 
@@ -44,6 +45,7 @@ const RegisterScreen = () => {
                 <Form.Control 
                     type='Name' 
                     {...register('name')}
+                    style={{ width: '50%', maxWidth: '500px' }}
                     required 
                 />
             </Form.Group>
@@ -53,6 +55,7 @@ const RegisterScreen = () => {
                 <Form.Control
                     type='email'
                     {...register('email')}
+                    style={{ width: '50%', maxWidth: '500px' }}
                     required
                 />
             </Form.Group>
@@ -62,6 +65,7 @@ const RegisterScreen = () => {
                 <Form.Control
                     type='password'
                     {...register('password')}
+                    style={{ width: '50%', maxWidth: '500px' }}
                     required
                 />
             </Form.Group>
@@ -69,9 +73,10 @@ const RegisterScreen = () => {
             <Form.Group>
                 <Form.Label>Confirm Password</Form.Label>
                 <Form.Control
-                type='password'
-                {...register('confirmPassword')}
-                required
+                    type='password'
+                    {...register('confirmPassword')}
+                    style={{ width: '50%', maxWidth: '500px' }}
+                    required
                 />
             </Form.Group>
 
@@ -81,7 +86,7 @@ const RegisterScreen = () => {
                 </Button>
             </Form.Group>
 
-
+            
         </Form>
     ) 
 }

@@ -8,6 +8,7 @@ import Transaction from '../components/Transaction'
 import Loader from '../components/Loader'
 import AlertMessage from '../components/AlertMessage'
 import TransactionForm from '../components/TransactionForm'
+import SearchBar from '../components/SearchBar'
 
 function HomeScreen() {
 
@@ -16,6 +17,7 @@ function HomeScreen() {
   const { transactions, loading, error } = useSelector(transactionSelector);
   const isAddingTransaction = useSelector((state) => state.transactions.isAddingTransaction);
   const [selectedYear, setSelectedYear] = useState('');
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
   const availableYears = [...new Set(transactions.map(transaction => transaction.year))];
 
   const handleDeleteTransaction = (transactionId) => {
@@ -26,20 +28,39 @@ function HomeScreen() {
     }
   };
 
+  
   useEffect(() => {
     if (userInfo) {
       fetchTransactions(userInfo, dispatch);
     }
   }, [userInfo, dispatch]);
   
+  
   const renderTransactions = () => {
     if (loading) return <Loader />
     if (error) return <AlertMessage variant='danger' message={error.message} />
 
-    // If the user hasn't input any transactions yet
+    let transactionsToRender = filteredTransactions.length > 0 ? filteredTransactions : transactions;
+
+    // Filter transactions based on the selected year, else render the filtered transactions OR all transactions
+    transactionsToRender = selectedYear
+      ? transactionsToRender.filter((transaction) => transaction.year === selectedYear)
+      : transactionsToRender;
+
+    if (transactionsToRender.length === 0) {
+      return <AlertMessage variant='info' message='Add a new transaction to get started' />;
+    }
+
+    return transactionsToRender.map((transaction) => (
+      <Transaction key={transaction.id} transaction={transaction} onDelete={handleDeleteTransaction} />
+    ));
+  };
+
+  /*
+  // If the user hasn't input any transactions yet
     if (transactions.length === 0) {
       return (
-            <AlertMessage variant='info' message='Add a new transaction to get started' />
+        <AlertMessage variant='info' message='Add a new transaction to get started' />
       )
     }
     // If no year is selected, display all transactions
@@ -48,6 +69,7 @@ function HomeScreen() {
         <Transaction key={transaction.id} transaction={transaction} onDelete={handleDeleteTransaction} />
       ));
     }
+
     // Filter transactions by selected year
     const filteredTransactions = transactions.filter((transaction) => {
       return transaction.year === selectedYear;
@@ -57,10 +79,21 @@ function HomeScreen() {
       <Transaction key={transaction.id} transaction={transaction} onDelete={handleDeleteTransaction} />
     )); 
   };
-
+  */
+  
+  const handleSearch = (keyword) => {
+    console.log(keyword);
+    const searchedTransactions = transactions.filter((transaction) =>
+      transaction.description.toLowerCase().includes(keyword.toLowerCase())
+      || transaction.category.toLowerCase().includes(keyword.toLowerCase())
+      //make more filter options
+    )
+    setFilteredTransactions(searchedTransactions);
+  }
 
   return (
     <div>
+        <SearchBar onSearch={handleSearch} />
         {userInfo ? (
           <h1>Hi, {userInfo.name}! Here are your transactions:</h1>
         ) : (
@@ -75,12 +108,13 @@ function HomeScreen() {
         
         {isAddingTransaction && <TransactionForm />}
 
-              <Card className="my-2 p-2 rounded" style={{ width: '18rem' }}>
+              <Card className="my-2 p-2 rounded" style={{ width: '14%' }}>
                 <Form.Select 
                 
                   aria-label="Default select example"
                   onChange={(e) => {setSelectedYear(e.target.value)}}
                   value={selectedYear}
+                  style={{width: '100%'}}
 
                 >
                   <option value="">Select a year</option>
@@ -92,7 +126,7 @@ function HomeScreen() {
 
                 </Form.Select>
               </Card>
-             
+          
               <Card className="my-1 p-1 rounded" style={{ width: '30rem' }}>
 
               { renderTransactions() }
