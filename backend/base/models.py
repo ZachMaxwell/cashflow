@@ -9,19 +9,17 @@ class Transaction(models.Model):
         ('Rent & Utilities', 'Rent & Utilities'),
         ('Travel & Personal & Other', 'Travel & Personal & Other'),
         ('Loans', 'Loans'),
-        ('Savings & Investments', 'Savings & Investments'),
         ('Subscriptions', 'Subscriptions' ),
         ('Groceries', 'Groceries'),
-        ('Paycheck & Deposits', 'Paycheck & Deposits'),
-        ('Income', 'Income'),
     ]
 
     TRANSACTION_TYPE_CHOICES = [
-        ('Deposit', 'Deposit'),
+        ('Income', 'Income'),
         ('Expense', 'Expense'),
         ('Investment', 'Investment'),
     ]
 
+    '''
     MONTH_CHOICES = [
         ('Jan', 'January'),
         ('Feb', 'February'),
@@ -71,15 +69,17 @@ class Transaction(models.Model):
         ('30', '30'),
         ('31', '31'),
     ]
+    '''
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    day = models.CharField(max_length=2, choices = DAY_CHOICES, default = '1', null=False, blank=False)
-    month = models.CharField(max_length=9, choices = MONTH_CHOICES, default = 'Jan', null=False, blank=False)
-    year = models.CharField(max_length=4, null=False, blank=False)
+    #day = models.CharField(max_length=2, choices = DAY_CHOICES, default = '1', null=False, blank=False)
+    #month = models.CharField(max_length=9, choices = MONTH_CHOICES, default = 'Jan', null=False, blank=False)
+    #year = models.CharField(max_length=4, null=False, blank=False)
+    date = models.DateField(null=True)
     description = models.CharField(max_length=100, null=True, blank=True)
-    transaction_type = models.CharField(max_length=10, choices = TRANSACTION_TYPE_CHOICES, default = 'Expense',null=False, blank=False)
-    category = models.CharField(max_length=75, choices = CATEGORY_CHOICES, default = 'Travel & Personal & Other',null=False, blank=False)
+    transaction_type = models.CharField(max_length=10, choices = TRANSACTION_TYPE_CHOICES, default = 'Expense', null=False, blank=False)
+    category = models.CharField(max_length=75, choices = CATEGORY_CHOICES, default = 'Travel & Personal & Other', null=False, blank=False)
     account = models.CharField(max_length=10, null=True, blank=True)
     id = models.AutoField(primary_key=True, editable=False)
     

@@ -6,6 +6,8 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { fetchTransactionModelFieldsAndTypes, fetchTransactionModelFormDataChoices } from '../utils/api';
 import { fieldDisplayNames, databaseFieldTypesToHTMLFieldTypes } from '../utils/constants'
+import DatePicker from 'react-datepicker';
+//import { format } from 'date-fns-tz';
 
 function EditTransactionForm({ transaction, onSave, onCancel }) {
 
@@ -17,6 +19,7 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
     const [fields, setFields] = useState([]);
     const [fieldTypes, setFieldTypes] = useState({});
     const [formChoices, setFormChoices] = useState({});
+    const [selectedDate, setSelectedDate] = useState();
     
     useEffect(() => {
        const fetchBackendMetaData = async () => {
@@ -37,28 +40,24 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
     }, [userInfo, dispatch]);
 
     useEffect(() => {
-        setFormData(transaction);
+      setFormData(transaction);
     }, [transaction]);
 
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-
-        console.log(`Changing ${name} to:`, value);
-        
-        setFormData({ 
-            ...formData,  
-            [name]: value 
-        });
-
+    const handleInputChange = (event) => {
+      const { name, value } = event.target;
+      console.log(`Changing ${name} to:`, value);
+      setFormData({ 
+          ...formData,  
+          [name]: value 
+      });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
+    const handleSubmit = async (event) => {
+        event.preventDefault();
         const formDataWithUserID = {
           ...formData,
-          user: userInfo.user_id
+          user: userInfo.user_id,
+          date: selectedDate.toISOString().slice(0, 10),
         }
 
         try {
@@ -85,44 +84,106 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
        
     };
 
-
     return (
-        <div>
-          <h3>Edit Transaction</h3>
-          <Form onSubmit={handleSubmit}>
-            {fields.map((fieldName) => (
-              <div key={fieldName} className="form-group row">
-                <label className="col-sm-3 col-form-label">{fieldDisplayNames[fieldName] || fieldName}:</label>
-                <div className="col-sm-9">
-                  {formChoices[fieldName] ? (
-                  <Form.Select
-                    type={databaseFieldTypesToHTMLFieldTypes[fieldTypes[fieldName]]}
-                    name={fieldName}
-                    value={formData[fieldName]}
-                    onChange={handleInputChange}
-                    className="form-control"
-                    required
-                    style={{ width: '30%', maxWidth: '150px' }}
-                  >
-                    <option value="">Select {fieldDisplayNames[fieldName]}</option>
-                    {formChoices[fieldName].map((choice, index) => (
-                      <option key={index} value={choice[0]}>{choice[0]}</option>
-                    ))}
-                  </Form.Select>
-                  ) : (
-                    <input
-                    type={databaseFieldTypesToHTMLFieldTypes[fieldTypes[fieldName]]}
-                    name={fieldName}
-                    value={formData[fieldName] || ''}
-                    onChange={handleInputChange}
-                    className="form-control"
-                    required
-                    style={{ width: '30%', maxWidth: '150px' }}
-                  />
-                )}
-                </div>
+      <Form onSubmit={handleSubmit}>
+          <h3><strong>Edit Transaction</strong></h3>
+
+          <div className='form-group row'>
+              <div>
+                <input
+                  type="number"
+                  name="amount"
+                  value={formData.amount}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  style={{ height: '150%', width: '70%', maxWidth: '205px' }}
+                  placeholder='Amount'
+                  required
+                />
               </div>
-            ))}
+            </div>
+            <br/>
+
+            <div>
+              <div>
+                <DatePicker
+                  selected={selectedDate}
+                  onChange={date => setSelectedDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Date"
+                  required
+                />
+              </div>
+            </div>
+            <br/>
+
+            <div className='form-group row'>
+              <div>
+                <input
+                  type="text"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  style={{ height: '150%', width: '70%', maxWidth: '205px' }}
+                  placeholder='Description'
+                  required
+                />
+              </div>
+            </div>
+            <br/>
+
+            <div className='form-group row'>
+              <div>
+                <input
+                  type="text"
+                  name="account"
+                  value={formData.account}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  style={{ height: '150%', width: '70%', maxWidth: '205px' }}
+                  placeholder='Account name'
+                  required
+                />
+              </div>
+            </div>
+            <br/>
+
+            <Form.Select
+              name="transaction_type"
+              value={formData.transaction_type || ''}
+              onChange={handleInputChange}
+              className="form-select"
+              style={{ width: '70%', maxWidth: '205px' }}
+              required
+            >
+              <option value="">Select Transaction Type:</option>
+              {formChoices.transaction_type?.map((choice, index) => (
+                <option key={index} value={choice[0]}>{choice[0]}</option>
+              ))}
+            
+            </Form.Select>
+            <br/>
+
+            {formData.transaction_type === 'Expense' && (
+              <Form.Select
+                name="category"
+                value={formData.category || ''}
+                onChange={handleInputChange}
+                className='form-select'
+                style={{ height: '150%', width: '70%', maxWidth: '205px' }}
+                required
+              >
+                <option value="">Select Category:</option>
+                {formChoices.category?.map((choice, index) => (
+                  <option key={index} value={choice[0]}>{choice[0]}</option>
+                ))}
+              </Form.Select>
+
+            )}
+            <br/>
+            
             <Button 
               type="submit" 
               variant="primary"
@@ -138,7 +199,6 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
               Cancel
             </Button>
           </Form>
-        </div>
     );
 }
 

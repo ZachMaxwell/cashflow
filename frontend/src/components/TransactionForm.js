@@ -5,7 +5,10 @@ import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useSelector } from "react-redux";
 import { fetchTransactionModelFormDataChoices, fetchTransactionModelFieldsAndTypes } from '../utils/api';
-import { fieldDisplayNames, databaseFieldTypesToHTMLFieldTypes } from '../utils/constants'
+//import { fieldDisplayNames, databaseFieldTypesToHTMLFieldTypes } from '../utils/constants'
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
 
 function TransactionForm() {
 
@@ -15,6 +18,7 @@ function TransactionForm() {
   const [fields, setFields] = useState([]);
   const [fieldTypes, setFieldTypes] = useState({});
   const [formChoices, setFormChoices] = useState({});
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const { userInfo } = useSelector((state) => state.auth);
 
@@ -30,6 +34,11 @@ function TransactionForm() {
           setFields(fieldNames);
           setFieldTypes(fieldsAndTypes);
           const initialFormData = {};
+
+          // set the values for the initialFormData
+          
+          /*
+          console.log('these are the field names:', fieldNames)
           fieldNames.forEach((fieldName) => {
             if (fieldsAndTypes[fieldName] === 'AutoField') {
               initialFormData[fieldName] = 0;
@@ -43,6 +52,8 @@ function TransactionForm() {
               initialFormData[fieldName] = '';
             }
           });
+          */
+          
           // Set state for setFormData to the initialFormData based on the above forEach statement
           setFormData(initialFormData);
         } catch (error) {
@@ -52,57 +63,25 @@ function TransactionForm() {
     }
     fetchBackendMetaData();
   }, [userInfo, dispatch]);
-
+  
   // handleInputChange changes whenever the user makes a change (e.g. selects a value from a dropdown, or types in a value)
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    // if the "value", (e.g. the value in the drop down that comes from the form_data_choices API call) includes a comma, then split the string 
-    // and take the first value (e.g. "Aug")
-    console.log(name)
-    console.log(value)
-
-    /* 29 NOV 2023
-    if (name === 'transaction_type' && value === 'Deposit') {
-      console.log('make this so that the category auto changes to income')
-      setFormData({
-        ...formData,
-        category: 'Income',
-        [String(name)]: value,
-      });
-    }
-    */
-
-    if (value.includes(',')) {
-      console.log(value)
-      const firstValueChoice = value.split(',')[0];
-
-      console.log(`Changing ${name} to:`, firstValueChoice);
-
-      // takes the already existing form data (e.g. ...formData), and updates the formData state to include the updated name, value pair (e.g. "month": "Aug")
-      setFormData({
-        ...formData,
-        [String(name)]: firstValueChoice,
-      });
-
-      // else if it doesn't include a ',', then just set the name equal to that value
-    } else {
-
-      console.log(`Changing ${name} to:`, value);
-
-      setFormData({
-        ...formData,
-        [String(name)]: value,
-      });
-    }
+    console.log(`Changing ${name} to: `, value)
+    setFormData({
+      ...formData,
+      [name]: value,
+    })
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     const formDataWithUserID = {
       ...formData,
-      user: userInfo.user_id
+      user: userInfo.user_id,
+      date: selectedDate.toISOString().slice(0, 10),
     }
+    console.log('this is the form data with user id and hopefully date being sent to the backend on handleSubmit', formDataWithUserID)
 
     try {
       const response = await axios.post('/api/transactions/create/', formDataWithUserID, {
@@ -111,8 +90,7 @@ function TransactionForm() {
           'Authorization': `Bearer ${userInfo.token}`
         }
       });
-  
-      // Check if the request was successful
+
       if (response.status === 201) {
         // Handle success & clear the form
         setFormData({});
@@ -129,49 +107,109 @@ function TransactionForm() {
       dispatch(addTransactionFailure('Error adding transaction: ', error.message));
     }
   };
-  
+
   return (
-    
+
     <Form onSubmit={handleSubmit}>
-      {fields.map((fieldName) => (
-        <div key={fieldName} className="form-group row">
-          <label 
-            className="col-sm-3 col-form-label">
-              <strong>{fieldDisplayNames[fieldName] || fieldName}:</strong>
-          </label>
-          <div className="col-sm-9">
-            {formChoices[fieldName] ? (
-              <Form.Select
-                name={fieldName}
-                value={formData[fieldName] || ''}
-                onChange={handleInputChange}
-                className="form-select"
-                required
-                style={{ width: '30%', maxWidth: '150px' }}
-              >
-                <option value="">Select {fieldDisplayNames[fieldName]}</option>
-                {formChoices[fieldName].map((choice, index) => (
-                  <option key={index} value={choice[0]}>{choice[0]}</option>
-                ))}
-              </Form.Select>
-            
-            ) : (
-              <input
-                type={databaseFieldTypesToHTMLFieldTypes[fieldTypes[fieldName]]}
-                name={fieldName}
-                value={formData[fieldName] || ''}
-                onChange={handleInputChange}
-                className="form-control"
-                required
-                style={{ width: '30%', maxWidth: '150px' }}
-              />
-            )}
+      <h3><strong>Add transaction</strong></h3>
+
+      <div className='form-group row'>
+          <div>
+            <input
+              type="number"
+              name="amount"
+              value={formData.amount}
+              onChange={handleInputChange}
+              className="form-control"
+              style={{ height: '150%', width: '70%', maxWidth: '205px' }}
+              placeholder='Amount'
+              required
+            />
           </div>
         </div>
-      ))}
-      <Button type="submit" variant="success">
-        Add Transaction
-      </Button>
+        <br/>
+
+        <div>
+          <div>
+            <DatePicker
+              selected={selectedDate}
+              onChange={date => setSelectedDate(date)}
+              className="form-control"
+              dateFormat="MM/dd/yyyy"
+              required
+            />
+          </div>
+        </div>
+        <br/>
+
+        <div className='form-group row'>
+          <div>
+            <input
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              className="form-control"
+              style={{ height: '150%', width: '70%', maxWidth: '205px' }}
+              placeholder='Description'
+              required
+            />
+          </div>
+        </div>
+        <br/>
+
+        <div className='form-group row'>
+          <div>
+            <input
+              type="text"
+              name="account"
+              value={formData.account}
+              onChange={handleInputChange}
+              className="form-control"
+              style={{ height: '150%', width: '70%', maxWidth: '205px' }}
+              placeholder='Account name'
+              required
+            />
+          </div>
+        </div>
+        <br/>
+
+        <Form.Select
+          name="transaction_type"
+          value={formData.transaction_type || ''}
+          onChange={handleInputChange}
+          className="form-select"
+          style={{ width: '70%', maxWidth: '205px' }}
+          required
+        >
+          <option value="">Select Transaction Type:</option>
+          {formChoices.transaction_type?.map((choice, index) => (
+            <option key={index} value={choice[0]}>{choice[0]}</option>
+          ))}
+        </Form.Select>
+        <br/>
+
+        {formData.transaction_type === 'Expense' && (
+          <Form.Select
+            name="category"
+            value={formData.category || ''}
+            onChange={handleInputChange}
+            className='form-select'
+            style={{ height: '150%', width: '70%', maxWidth: '205px' }}
+            required
+          >
+            <option value="">Select Category:</option>
+            {formChoices.category?.map((choice, index) => (
+              <option key={index} value={choice[0]}>{choice[0]}</option>
+            ))}
+    
+          </Form.Select>
+        )}
+        <br/>
+
+        <Button type="submit" variant="success">
+          Add Transaction
+        </Button>
     </Form>
   );
 };

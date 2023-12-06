@@ -1,9 +1,7 @@
 export const fieldDisplayNames = {
     user: 'User',
     amount: 'Amount',
-    day: 'Day',
-    month: 'Month',
-    year: 'Year',
+    date: 'Date',
     description: 'Description',
     transaction_type: 'Type of transaction',
     category: 'Category',

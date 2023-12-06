@@ -14,7 +14,7 @@ function Transaction({ transaction, onDelete, onEdit }) {
     const [isEditing, setIsEditing] = useState(false);
 
     let result_amount;
-    if (transaction.category === 'Income') {
+    if (transaction.transaction_type === 'Income') {
         result_amount = <font color="green">+${transaction.amount}</font>;
     } else {
         result_amount = <font color="red">-${transaction.amount}</font>;
@@ -44,7 +44,7 @@ function Transaction({ transaction, onDelete, onEdit }) {
                 </Card.Text>
 
                 <Card.Title as="div" className="py-2">
-                    <strong>{transaction.month} {transaction.day}, {transaction.year}</strong>
+                    <strong>{transaction.date}</strong>
                 </Card.Title>
 
             </Card.Body>

@@ -66,7 +66,7 @@ function TransactionDetailScreen() {
                 </Card.Text>
 
                 <Card.Title as="div" className="py-2">
-                    {transaction.month} {transaction.day}, {transaction.year}
+                    {transaction.date}
                 </Card.Title>
 
                 <Card.Text as="h5">

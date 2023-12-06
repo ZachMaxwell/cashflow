@@ -18,16 +18,16 @@ function HomeScreen() {
   const isAddingTransaction = useSelector((state) => state.transactions.isAddingTransaction);
   const [selectedYear, setSelectedYear] = useState('');
   const [filteredTransactions, setFilteredTransactions] = useState([]);
-  const availableYears = [...new Set(transactions.map(transaction => transaction.year))];
+  const availableYears = [...new Set(transactions.map(transaction => transaction.date.slice(0,4)))];
 
   const handleDeleteTransaction = (transactionId) => {
     if (userInfo) { 
       deleteATransaction(userInfo, transactionId, dispatch) 
     } else {
+      
       console.error('User information not available for delete operation');
     }
   };
-
   
   useEffect(() => {
     if (userInfo) {
@@ -42,13 +42,13 @@ function HomeScreen() {
 
     let transactionsToRender = filteredTransactions.length > 0 ? filteredTransactions : transactions;
 
-    // Filter transactions based on the selected year, else render the filtered transactions OR all transactions
+    // Filter transactions based on the selected year, else render the searched transactions OR all transactions
     transactionsToRender = selectedYear
-      ? transactionsToRender.filter((transaction) => transaction.year === selectedYear)
+      ? transactionsToRender.filter((transaction) => transaction.date.slice(0,4) === selectedYear)
       : transactionsToRender;
 
     if (transactionsToRender.length === 0) {
-      return <AlertMessage variant='info' message='Add a new transaction to get started' />;
+      return <AlertMessage variant='info' message='Please add a new transaction to get started 🌱' />;
     }
 
     return transactionsToRender.map((transaction) => (
