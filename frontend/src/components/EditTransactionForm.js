@@ -4,8 +4,7 @@ import { editTransaction, editTransactionSuccess, editTransactionFailure } from 
 import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { fetchTransactionModelFieldsAndTypes, fetchTransactionModelFormDataChoices } from '../utils/api';
-import { fieldDisplayNames, databaseFieldTypesToHTMLFieldTypes } from '../utils/constants'
+import { fetchTransactionModelFormDataChoices } from '../utils/api';
 import DatePicker from 'react-datepicker';
 //import { format } from 'date-fns-tz';
 
@@ -16,8 +15,6 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
     const { userInfo } = useSelector((state) => state.auth);
 
     const [formData, setFormData] = useState({});
-    const [fields, setFields] = useState([]);
-    const [fieldTypes, setFieldTypes] = useState({});
     const [formChoices, setFormChoices] = useState({});
     const [selectedDate, setSelectedDate] = useState();
     
@@ -27,21 +24,15 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
           try {
             const backendModelFormChoices = await fetchTransactionModelFormDataChoices(userInfo, dispatch);
             setFormChoices(backendModelFormChoices);
-
-            const { fieldNames, fieldsAndTypes } = await fetchTransactionModelFieldsAndTypes(userInfo, dispatch);
-            setFields(fieldNames);
-            setFieldTypes(fieldsAndTypes);
           } catch (error) {
             console.log('Error fetching backend metadata', error);  
+            throw error;
           }
         }
       }
-       fetchBackendMetaData();
-    }, [userInfo, dispatch]);
-
-    useEffect(() => {
+      fetchBackendMetaData();
       setFormData(transaction);
-    }, [transaction]);
+    }, [userInfo, dispatch, transaction]);
 
     const handleInputChange = (event) => {
       const { name, value } = event.target;
@@ -175,7 +166,7 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
                 style={{ height: '150%', width: '70%', maxWidth: '205px' }}
                 required
               >
-                <option value="">Select Category:</option>
+                <option value="">Select Expense Category:</option>
                 {formChoices.category?.map((choice, index) => (
                   <option key={index} value={choice[0]}>{choice[0]}</option>
                 ))}

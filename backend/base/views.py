@@ -12,7 +12,6 @@ from rest_framework import status
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        print(data)
         
         '''
         # Overriding the validate method to add more data to the response. 
@@ -26,7 +25,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         for k, v in serializer.items(): # loop through all the fields in the UserSerializerWithToken class
             data[k] = v #update the data dictionary with the data from the UserSerializerWithToken class
         
-        print(data)
 
         return data
 
@@ -111,7 +109,6 @@ def get_transaction_model_fields_and_types(request):
     fields_and_types = {}
 
     for field in model._meta.get_fields():
-        print(field)
         if field.name == 'user' or field.name == 'id':
             continue
         else:

@@ -15,11 +15,11 @@ function TrendsScreen() {
     const [selectedYear, setSelectedYear] = useState('');
 
     const filteredTransactionsByYear = selectedYear
-        ? transactions.filter(transaction => transaction.year === selectedYear)
+        ? transactions.filter(transaction => transaction.date.slice(0,4) === selectedYear)
         : transactions;
 
     //Make a set containing all available years for use in Form.Select so I don't have to hard-code all the year values in the select drop down
-    const availableYears = [...new Set(transactions.map(transaction => transaction.year))];
+    const availableYears = [...new Set(transactions.map(transaction => transaction.date.slice(0,4)))];
     
     useEffect(() => {
       if (userInfo) {
@@ -40,26 +40,27 @@ function TrendsScreen() {
         //this will be the object that will hold the totals by year
         const totalsByYear = {};
         transactions.forEach((transaction) => { 
-            const { year, month, transaction_type, category, amount } = transaction;
+            const { date, transaction_type, category, amount } = transaction;
             const amountFloat = parseFloat(amount); 
+            const year = new Date(date).getFullYear();
+            const month = new Date(date).toLocaleString('default', { month: 'short' });
             // Initialize the totalByYear object with each year  
             if (!totalsByYear[year]) {
                 totalsByYear[year] = {};
             }
             // Initialize the totalByYear object with each month for each corresponding year
             if (!totalsByYear[year][month]) {
-                //OLD -> totalsByYear[year][month] = { income: 0, expense: 0, investment: 0, net: 0 };
                 totalsByYear[year][month] = { Net: 0 };
               }
             // I think this might already be done in the previous step??
             // Initialize the totalByYear object with each transaction type for the corresponding year and month
             if (!totalsByYear[year][month][transaction_type]) {
-            totalsByYear[year][month][transaction_type] = 0;
+                totalsByYear[year][month][transaction_type] = 0;
             }
             // Add the amount to the corresponding transaction type total for the corresponding year and month
             totalsByYear[year][month][transaction_type] += amountFloat;
             // Calculate the Net difference for the corresponding year and month
-            totalsByYear[year][month].Net = (totalsByYear[year][month].Deposit || 0) - (totalsByYear[year][month].Expense || 0);
+            totalsByYear[year][month].Net = (totalsByYear[year][month].Income || 0) - (totalsByYear[year][month].Expense || 0);
 
             //***NEW, NOV 19 2023***
             // Calculate the totals by category for each month
@@ -71,7 +72,7 @@ function TrendsScreen() {
         console.log('current totals by year', totalsByYear);
         return totalsByYear;
     };
-
+    console.log('printing the filtered transactions by year', filteredTransactionsByYear)
     const yearlyTotalsByMonthAndTransactionTypeAndCategory = calculateTotalsByYear(filteredTransactionsByYear);
 
     //Creates a new array of objects where each object includes the year, month, and the totals by transaction type for each year and month
@@ -140,9 +141,9 @@ function TrendsScreen() {
                 </YAxis>
                 <Tooltip />
                 <Legend />
-                <Bar dataKey= "Deposit" fill="#82ca9d" />
-                <Bar dataKey= "Expense" fill="#8884d8" />
-                <Bar dataKey= "Investment" fill="#ab56d8" />
+                <Bar dataKey= "Income" fill="#82ca9d" />
+                <Bar dataKey= "Expense" fill="#FF6961" />
+                <Bar dataKey= "Investment" fill="#ADD8E6" />
                 <Bar dataKey= "Net" fill="#ffc658" /> 
             </BarChart>
 
@@ -174,19 +175,17 @@ function TrendsScreen() {
                 </YAxis>
                 <Tooltip />
                 <Legend />
-                <Bar dataKey= "Going out & Eating out" fill="#82ca9d" />
-                <Bar dataKey= "Rent & Utilities" fill="#8884d8" />
-                <Bar dataKey= "Loans" fill="#ab56d8" />
-                <Bar dataKey= "Savings & Investments" fill="#ffc658" />
-                <Bar dataKey= "Car & Gas & Auto Insurance" fill="#85cd9a" />
-                <Bar dataKey= "Travel & Personal & Other" fill="#59fedc" />
-                <Bar dataKey= "Subscriptions" fill="#3dcafe" />
-                <Bar dataKey= "Groceries" fill="#ed34fa" />
+                <Bar dataKey= "Going out & Eating out" fill="#FF6961" />
+                <Bar dataKey= "Rent & Utilities" fill="#FF6961" />
+                <Bar dataKey= "Loans" fill="#FF6961" />
+                <Bar dataKey= "Car & Gas & Auto Insurance" fill="#FF6961" />
+                <Bar dataKey= "Travel & Personal & Other" fill="#FF6961" />
+                <Bar dataKey= "Subscriptions" fill="#FF6961" />
+                <Bar dataKey= "Groceries" fill="#FF6961" />
+                <Bar dataKey= "Investment" fill="#ADD8E6" />
                 <Bar dataKey= "Income" fill="#82ca9d" />
 
             </BarChart>
-
-           
 
         </div>
 

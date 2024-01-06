@@ -4,8 +4,7 @@ import { addTransaction, addTransactionSuccess, addTransactionFailure } from '..
 import { Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 import { useSelector } from "react-redux";
-import { fetchTransactionModelFormDataChoices, fetchTransactionModelFieldsAndTypes } from '../utils/api';
-//import { fieldDisplayNames, databaseFieldTypesToHTMLFieldTypes } from '../utils/constants'
+import { fetchTransactionModelFormDataChoices } from '../utils/api';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -15,8 +14,6 @@ function TransactionForm() {
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({});
-  const [fields, setFields] = useState([]);
-  const [fieldTypes, setFieldTypes] = useState({});
   const [formChoices, setFormChoices] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -26,42 +23,17 @@ function TransactionForm() {
     const fetchBackendMetaData = async () => {
       if (userInfo) {
         try {
-        
           const backendModelFormChoices = await fetchTransactionModelFormDataChoices(userInfo, dispatch);
           setFormChoices(backendModelFormChoices);
-
-          const { fieldNames, fieldsAndTypes } = await fetchTransactionModelFieldsAndTypes(userInfo, dispatch);
-          setFields(fieldNames);
-          setFieldTypes(fieldsAndTypes);
           const initialFormData = {};
-
-          // set the values for the initialFormData
-          
-          /*
-          console.log('these are the field names:', fieldNames)
-          fieldNames.forEach((fieldName) => {
-            if (fieldsAndTypes[fieldName] === 'AutoField') {
-              initialFormData[fieldName] = 0;
-            } else if (initialFormData[fieldName] === 'DecimalField') {
-                initialFormData[fieldName] = 0;
-            } else if (initialFormData[fieldName] === 'CharField') {
-                initialFormData[fieldName] = '';
-            } else if (initialFormData[fieldName] === 'ForeignKey') {
-                initialFormData[fieldName] = 0;
-            } else {
-              initialFormData[fieldName] = '';
-            }
-          });
-          */
-          
-          // Set state for setFormData to the initialFormData based on the above forEach statement
           setFormData(initialFormData);
         } catch (error) {
             console.log('Error fetching backend metadata...', error)
+            throw error;
         }
       }
-    }
-    fetchBackendMetaData();
+  }
+  fetchBackendMetaData();
   }, [userInfo, dispatch]);
   
   // handleInputChange changes whenever the user makes a change (e.g. selects a value from a dropdown, or types in a value)
@@ -198,7 +170,7 @@ function TransactionForm() {
             style={{ height: '150%', width: '70%', maxWidth: '205px' }}
             required
           >
-            <option value="">Select Category:</option>
+            <option value="">Select Expense Category:</option>
             {formChoices.category?.map((choice, index) => (
               <option key={index} value={choice[0]}>{choice[0]}</option>
             ))}

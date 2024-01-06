@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { transactionSelector, toggleAddTransactionForm } from '../features/transactionSlice'
 import { fetchTransactions, deleteATransaction } from '../utils/api'
@@ -24,8 +24,8 @@ function HomeScreen() {
     if (userInfo) { 
       deleteATransaction(userInfo, transactionId, dispatch) 
     } else {
-      
       console.error('User information not available for delete operation');
+      throw error
     }
   };
   
@@ -55,50 +55,26 @@ function HomeScreen() {
       <Transaction key={transaction.id} transaction={transaction} onDelete={handleDeleteTransaction} />
     ));
   };
-
-  /*
-  // If the user hasn't input any transactions yet
-    if (transactions.length === 0) {
-      return (
-        <AlertMessage variant='info' message='Add a new transaction to get started' />
-      )
-    }
-    // If no year is selected, display all transactions
-    if (selectedYear === 'Select a year' || selectedYear === '') {
-      return transactions.map((transaction) => (
-        <Transaction key={transaction.id} transaction={transaction} onDelete={handleDeleteTransaction} />
-      ));
-    }
-
-    // Filter transactions by selected year
-    const filteredTransactions = transactions.filter((transaction) => {
-      return transaction.year === selectedYear;
-    });
-
-    return filteredTransactions.map((transaction) => (
-      <Transaction key={transaction.id} transaction={transaction} onDelete={handleDeleteTransaction} />
-    )); 
-  };
-  */
   
-  const handleSearch = (keyword) => {
-    console.log(keyword);
+  const handleSearch = useCallback((keyword) => {
     const searchedTransactions = transactions.filter((transaction) =>
-      transaction.description.toLowerCase().includes(keyword.toLowerCase())
-      || transaction.category.toLowerCase().includes(keyword.toLowerCase())
-      //make more filter options
+      transaction.description?.toLowerCase().includes(keyword?.toLowerCase())
+      || transaction.category?.toLowerCase().includes(keyword?.toLowerCase())
+      //To Do - make more filter options
     )
     setFilteredTransactions(searchedTransactions);
-  }
+  }, [transactions])
 
   return (
     <div>
         <SearchBar onSearch={handleSearch} />
+
         {userInfo ? (
           <h1>Hi, {userInfo.name}! Here are your transactions:</h1>
         ) : (
           <h1>Hello!</h1>
         )}
+
         <h2>You have {transactions.length} total transactions</h2>
         <br></br>
 

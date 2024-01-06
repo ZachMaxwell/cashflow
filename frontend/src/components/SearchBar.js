@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Form } from 'react-bootstrap'
 
 
@@ -6,11 +6,14 @@ function SearchBar({ onSearch }) {
 
     const [keyword, setKeyword] = useState('');
 
+    useEffect(() => {
+        onSearch(keyword)
+    }, [onSearch, keyword])
+
     const searchInputHandler = (e) => {
         e.preventDefault()
         let searchInput = e.target.value.toLowerCase()
         setKeyword(searchInput)
-        onSearch(keyword)
     }
 
     return (

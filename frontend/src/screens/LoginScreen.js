@@ -44,15 +44,17 @@ const LoginScreen = () => {
         <Form.Label>Email</Form.Label>
         <Form.Control 
           type='email'
+          style={{ width: '40%' }}
           {...register('email')}
           required
         />
       </Form.Group>
 
-      <Form.Group>
+      <Form.Group className=''>
         <Form.Label>Password</Form.Label>
         <Form.Control 
-          type='password' 
+          type='password'
+          style={{ width: '40%' }}
           {...register('password')}
           required
         />

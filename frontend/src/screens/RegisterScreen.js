@@ -40,6 +40,10 @@ const RegisterScreen = () => {
                 <h2>Create an account<span role="img" aria-label="Lock">✍</span></h2>
             </div>
             
+            <div className="text-center mt-3">
+                <p>Already have an account? <a href="/login">Login</a></p>
+            </div>
+
             <Form.Group>
                 <Form.Label>Name</Form.Label>
                 <Form.Control 
