@@ -49,6 +49,7 @@ function EditTransactionForm({ transaction, onSave, onCancel }) {
           ...formData,
           user: userInfo.user_id,
           date: selectedDate.toISOString().slice(0, 10),
+          amount: parseFloat(formData.amount),
         }
 
         try {

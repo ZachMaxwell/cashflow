@@ -3,13 +3,9 @@ import {
     getTransactions, 
     getTransactionsSuccess, 
     getTransactionsFailure, 
-    //addTransaction,
-    //addTransactionSuccess,
-    //addTransactionFailure,
     deleteTransaction,
     deleteTransactionSuccess,
     deleteTransactionFailure,
-
 } from '../features/transactionSlice';
 
 import { getTransactionDetails, getTransactionDetailsSuccess, getTransactionDetailsFailure } from '../features/transactionDetailsSlice';
@@ -20,7 +16,7 @@ export const fetchTransactions = async (userInfo, dispatch) => {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${userInfo.token}`
-        }
+            }
         } 
 
         const response = await axios.get('/api/transactions/', config);

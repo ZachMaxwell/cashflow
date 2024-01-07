@@ -1,5 +1,9 @@
 {
   "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.3",
+    "@mui/x-data-grid": "^6.18.7",
     "react-charts": "^3.0.0-beta.55",
     "recharts": "^2.7.2"
   }

@@ -52,6 +52,7 @@ function TransactionForm() {
       ...formData,
       user: userInfo.user_id,
       date: selectedDate.toISOString().slice(0, 10),
+      amount: parseFloat(formData.amount),
     }
     console.log('this is the form data with user id and hopefully date being sent to the backend on handleSubmit', formDataWithUserID)
 

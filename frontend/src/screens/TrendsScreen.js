@@ -6,6 +6,7 @@ import Loader from '../components/Loader';
 import { fetchTransactions } from '../utils/api';
 import { transactionSelector } from '../features/transactionSlice';
 import AlertMessage from '../components/AlertMessage';
+import calculateTotalsByTransactionTypeAndCategory from '../utils/calculations/calculateTotalsByTransactionTypeAndCategory';
 
 function TrendsScreen() {
 
@@ -36,46 +37,9 @@ function TrendsScreen() {
       return <AlertMessage variant='danger' message={error.message} />
     }
 
-    function calculateTotalsByYear(transactions) {
-        //this will be the object that will hold the totals by year
-        const totalsByYear = {};
-        transactions.forEach((transaction) => { 
-            const { date, transaction_type, category, amount } = transaction;
-            const amountFloat = parseFloat(amount); 
-            const year = new Date(date).getFullYear();
-            const month = new Date(date).toLocaleString('default', { month: 'short' });
-            // Initialize the totalByYear object with each year  
-            if (!totalsByYear[year]) {
-                totalsByYear[year] = {};
-            }
-            // Initialize the totalByYear object with each month for each corresponding year
-            if (!totalsByYear[year][month]) {
-                totalsByYear[year][month] = { Net: 0 };
-              }
-            // I think this might already be done in the previous step??
-            // Initialize the totalByYear object with each transaction type for the corresponding year and month
-            if (!totalsByYear[year][month][transaction_type]) {
-                totalsByYear[year][month][transaction_type] = 0;
-            }
-            // Add the amount to the corresponding transaction type total for the corresponding year and month
-            totalsByYear[year][month][transaction_type] += amountFloat;
-            // Calculate the Net difference for the corresponding year and month
-            totalsByYear[year][month].Net = (totalsByYear[year][month].Income || 0) - (totalsByYear[year][month].Expense || 0);
+    const yearlyTotalsByMonthAndTransactionTypeAndCategory = calculateTotalsByTransactionTypeAndCategory(filteredTransactionsByYear);
 
-            //***NEW, NOV 19 2023***
-            // Calculate the totals by category for each month
-            if (!totalsByYear[year][month][category]) {
-                totalsByYear[year][month][category] = 0;
-                }
-            totalsByYear[year][month][category] += amountFloat;
-        });
-        console.log('current totals by year', totalsByYear);
-        return totalsByYear;
-    };
-    console.log('printing the filtered transactions by year', filteredTransactionsByYear)
-    const yearlyTotalsByMonthAndTransactionTypeAndCategory = calculateTotalsByYear(filteredTransactionsByYear);
-
-    //Creates a new array of objects where each object includes the year, month, and the totals by transaction type for each year and month
+    //Transforms the object into an array of objects where each object includes the year, month, and the totals by transaction type and category for each year and month
     const barChartDataByTransactionTypeAndCategory = [];
     for (const year in yearlyTotalsByMonthAndTransactionTypeAndCategory) {
         for (const month in yearlyTotalsByMonthAndTransactionTypeAndCategory[year]) {
@@ -88,7 +52,7 @@ function TrendsScreen() {
         }
     }
 
-    //Creates a new object where it separates out the transaction type totals and creates a new date field that includes 
+    //Creates a new object where it separates out the transaction_type totals and creates a new date field that includes 
     //the month and year. This is done so that the bar chart can be displayed with the month and year on the x-axis
     const barChartDataByTransactionTypeAndCategoryWithDate = barChartDataByTransactionTypeAndCategory.map((item) => ({
         ...item,

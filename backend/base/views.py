@@ -58,6 +58,7 @@ def getTransactions(request):
     # filters the transactions by the user ID
     transactions = Transaction.objects.filter(user=user)
     serializer = TransactionSerializer(transactions, many=True)
+    print('printing all the transactions after serializer: ', serializer.data)
     return Response(serializer.data)
 
 @api_view(['GET'])

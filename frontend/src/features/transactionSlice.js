@@ -20,7 +20,10 @@ export const transactionSlice = createSlice({
             state.loading = true;
         },
         getTransactionsSuccess: (state, { payload }) => {
-            state.transactions = payload;
+            state.transactions = payload.map(transaction => ({
+                ...transaction,
+                amount: parseFloat(transaction.amount)
+            }))
             state.loading = false;
             state.error = null;
         },

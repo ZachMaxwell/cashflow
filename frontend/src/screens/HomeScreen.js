@@ -34,6 +34,8 @@ function HomeScreen() {
       fetchTransactions(userInfo, dispatch);
     }
   }, [userInfo, dispatch]);
+
+  console.log('logging transactions', transactions)
   
   
   const renderTransactions = () => {
@@ -71,6 +73,7 @@ function HomeScreen() {
 
         {userInfo ? (
           <h1>Hi, {userInfo.name}! Here are your transactions:</h1>
+          
         ) : (
           <h1>Hello!</h1>
         )}
